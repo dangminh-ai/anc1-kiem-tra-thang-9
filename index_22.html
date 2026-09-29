@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced English Proficiency Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --ink: #16241f;
+    --ink-soft: #4b5b54;
+    --paper: #f4efe4;
+    --paper-card: #fffdf8;
+    --line: #ddd3bd;
+    --pine: #10362b;
+    --pine-light: #1c5240;
+    --gold: #b4863b;
+    --gold-soft: #e8d6ac;
+    --terracotta: #a8492f;
+    --ok: #1c6e4a;
+    --ok-bg: #e4f2ea;
+    --bad: #a8402d;
+    --bad-bg: #fbe9e4;
+    --shadow: 0 10px 30px -14px rgba(16,54,43,0.28);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    line-height: 1.7;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(180,134,59,0.08), transparent 40%),
+      radial-gradient(circle at 90% 92%, rgba(16,54,43,0.07), transparent 45%);
+  }
+  body.exam-active { -webkit-user-select: none; user-select: none; }
+  body.exam-active input, body.exam-active textarea, body.exam-active select { user-select: text; -webkit-user-select: text; }
+
+  ::selection { background: var(--gold-soft); }
+
+  /* ---------- Top masthead ---------- */
+  .top-bar {
+    background: linear-gradient(155deg, var(--pine) 0%, #0c2a21 65%, #0a231b 100%);
+    color: #f4efe4;
+    padding: 34px 24px 26px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .top-bar::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(115deg, rgba(244,239,228,0.035) 0 2px, transparent 2px 26px);
+    pointer-events: none;
+  }
+  .top-bar .eyebrow {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin: 0 0 10px 0;
+    opacity: 0.9;
+  }
+  .top-bar h1 {
+    margin: 0 0 10px 0;
+    font-family: 'Playfair Display', 'Source Serif 4', Georgia, serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: 0.3px;
+    position: relative;
+  }
+  .top-bar p {
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 13.5px;
+    letter-spacing: 0.2px;
+    color: #d9e4dc;
+    position: relative;
+  }
+  .top-bar .divider-orn {
+    width: 64px; height: 2px; margin: 16px auto 0 auto;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    position: relative;
+  }
+
+  /* ---------- Status / progress bar ---------- */
+  .status-bar {
+    position: sticky; top: 0; z-index: 30;
+    background: rgba(244,239,228,0.94);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 16px;
+  }
+  .status-row {
+    max-width: 920px; margin: 0 auto;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap; justify-content: space-between;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+  }
+  .status-chip {
+    font-size: 12.5px;
+    color: var(--pine);
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 13px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .status-chip.timer { font-weight: 700; color: var(--pine); border-color: var(--gold-soft); background: #fbf4e2; }
+  .status-chip.timer.low { color: #fff; border-color: var(--bad); background: var(--terracotta); animation: pulseLow 1.4s ease-in-out infinite; }
+  @keyframes pulseLow { 0%,100% { opacity: 1; } 50% { opacity: 0.72; } }
+  .status-chip.switches { color: #7a4a2f; }
+  .nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+  .nav-links a {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 12.5px; font-weight: 600;
+    text-decoration: none;
+    color: var(--pine);
+    border: 1px solid var(--pine);
+    border-radius: 999px;
+    padding: 5px 12px;
+    transition: all 0.15s ease;
+  }
+  .nav-links a:hover { background: var(--pine); color: #f4efe4; }
+
+  .progress-track {
+    max-width: 920px; margin: 9px auto 0 auto;
+    width: 100%; height: 7px;
+    background: #e3dcc9;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--pine-light)); transition: width 0.4s ease; }
+  .progress-label {
+    max-width: 920px; margin: 5px auto 0 auto;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 11.5px; color: var(--ink-soft); text-align: right;
+  }
+
+  .container { max-width: 920px; margin: 0 auto; padding: 26px 18px 110px 18px; }
+
+  /* ---------- Name box ---------- */
+  .name-box {
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 26px;
+    box-shadow: var(--shadow);
+  }
+  .name-box label {
+    display: block; margin-bottom: 8px; font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.3px; color: var(--pine);
+    text-transform: uppercase;
+  }
+  .name-box input {
+    width: 100%; padding: 10px 12px; font-size: 15.5px;
+    font-family: 'Source Serif 4', Georgia, serif;
+    border: 1px solid #c9bfa6; border-radius: 6px; background: #fffefb;
+  }
+  .name-box input:focus { outline: 2px solid var(--gold-soft); border-color: var(--gold); }
+
+  /* ---------- Note / callout ---------- */
+  .note-box {
+    background: #fbf4e2;
+    border: 1px solid var(--gold-soft);
+    border-left: 4px solid var(--gold);
+    border-radius: 8px;
+    padding: 13px 16px;
+    margin: 6px 0 18px 0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 13.5px;
+    color: #5c4a24;
+  }
+
+  /* ---------- Part headers ---------- */
+  .part-header {
+    margin: 44px 0 6px 0;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--pine);
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .part-header h2 {
+    margin: 0; font-size: 21px;
+    font-family: 'Playfair Display', Georgia, serif;
+    color: var(--pine); letter-spacing: 0.2px;
+  }
+  .part-pending {
+    background: #fbf2df; border: 1px dashed var(--gold);
+    border-radius: 8px; padding: 14px 16px; margin: 10px 0;
+    font-family: 'Inter', sans-serif; font-size: 13.5px; color: #6b552b;
+  }
+
+  .sub-header {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-weight: 700; font-size: 14.5px;
+    color: #fffdf8;
+    background: var(--pine-light);
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin: 26px 0 4px 0;
+  }
+  .sub-instructions {
+    font-family: 'Inter', sans-serif;
+    font-style: italic; font-size: 12.5px;
+    color: var(--ink-soft); margin: 6px 0 14px 0;
+  }
+
+  /* ---------- Question cards ---------- */
+  .card {
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 0 rgba(16,54,43,0.03);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+  .card:hover { box-shadow: var(--shadow); border-color: #cbbf9f; }
+  .q-text { font-size: 15.5px; margin-bottom: 10px; }
+  .q-num {
+    font-weight: 700; color: #fff; margin-right: 8px;
+    background: var(--pine); border-radius: 6px;
+    padding: 1px 8px; font-family: 'Inter', sans-serif; font-size: 13px;
+  }
+  .manual-tag {
+    font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 700;
+    color: var(--terracotta); background: #fbe9e4;
+    border-radius: 999px; padding: 2px 8px; margin-left: 6px;
+    vertical-align: middle; letter-spacing: 0.3px;
+  }
+
+  .options-grid { display: grid; gap: 8px; margin-top: 8px; }
+  .option-label {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 14.5px; padding: 9px 12px;
+    border: 1px solid #d8cfb6; border-radius: 8px;
+    background: #fffefb; cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .option-label:hover { border-color: var(--gold); background: #fbf6e9; }
+  .option-label input { accent-color: var(--pine); width: 15px; height: 15px; }
+  .option-label.correct { background: var(--ok-bg); border-color: var(--ok); }
+  .option-label.incorrect { background: var(--bad-bg); border-color: var(--bad); }
+
+  .text-input {
+    width: 100%; padding: 9px 11px; font-size: 14.5px;
+    font-family: 'Source Serif 4', Georgia, serif;
+    border: 1px solid #c9bfa6; border-radius: 6px; background: #fffefb;
+    margin-top: 4px;
+  }
+  .text-input:focus { outline: 2px solid var(--gold-soft); border-color: var(--gold); }
+  .text-input.correct { background: var(--ok-bg); border-color: var(--ok); }
+  .text-input.incorrect { background: var(--bad-bg); border-color: var(--bad); }
+
+  .inline-blank {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 14.5px;
+    border: none; border-bottom: 2px solid var(--gold);
+    background: #fbf6e9;
+    padding: 2px 6px; margin: 0 2px;
+    min-width: 92px; border-radius: 3px 3px 0 0;
+  }
+  .inline-blank:focus { outline: none; border-bottom-color: var(--pine); background: #fff8e6; }
+  .inline-blank.correct { background: var(--ok-bg); border-bottom-color: var(--ok); }
+  .inline-blank.incorrect { background: var(--bad-bg); border-bottom-color: var(--bad); }
+  select.inline-blank { min-width: 240px; }
+
+  .passage-box {
+    font-size: 15.5px;
+    background: #fffefb;
+    line-height: 1.85;
+  }
+  .passage-box strong { color: var(--pine); }
+
+  .answer-reveal {
+    display: none; margin-top: 10px;
+    font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+    color: var(--pine); background: var(--ok-bg);
+    border: 1px solid var(--ok); border-radius: 6px; padding: 7px 11px;
+  }
+
+  .essay-area {
+    width: 100%; min-height: 210px; padding: 12px 14px; font-size: 15px;
+    font-family: 'Source Serif 4', Georgia, serif;
+    border: 1px solid #c9bfa6; border-radius: 8px; background: #fffefb;
+    resize: vertical; margin-top: 6px; line-height: 1.75;
+  }
+  .essay-area:focus { outline: 2px solid var(--gold-soft); border-color: var(--gold); }
+  .essay-meta {
+    font-family: 'Inter', sans-serif; font-size: 12px; color: var(--ink-soft);
+    margin-top: 6px; text-align: right;
+  }
+  .essay-meta.over-under { color: var(--terracotta); font-weight: 600; }
+
+  /* ---------- Score box ---------- */
+  .score-box {
+    display: none; margin-top: 34px;
+    background: linear-gradient(160deg, #10362b, #0c2a21);
+    color: #f4efe4;
+    border-radius: 12px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+  .score-box p { margin: 6px 0; font-family: 'Inter', sans-serif; font-size: 14px; }
+  .score-box strong { color: var(--gold-soft); font-size: 17px; }
+
+  /* ---------- Footer bar ---------- */
+  .footer-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: rgba(244,239,228,0.96);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--line);
+    padding: 12px 16px;
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .footer-bar button {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-weight: 700; font-size: 13.5px;
+    border-radius: 999px; padding: 11px 22px;
+    border: none; cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+  }
+  .footer-bar button:active { transform: scale(0.97); }
+  .btn-submit { background: var(--pine); color: #f4efe4; }
+  .btn-submit:hover { background: var(--pine-light); }
+  .btn-submit:disabled { background: #b7c4bd; cursor: not-allowed; }
+  .btn-email { background: var(--gold); color: #2b220f; }
+  .btn-email:hover { filter: brightness(1.05); }
+  .btn-email:disabled { background: #e3d9bd; color: #9c9377; cursor: not-allowed; }
+  .btn-unlock { background: transparent; color: var(--pine); border: 1.5px solid var(--pine) !important; }
+  .btn-unlock:hover { background: var(--pine); color: #f4efe4; }
+  .btn-secondary { background: #e5ddc9; color: #4b3f26; }
+  .btn-secondary:hover { background: #d9cfb3; }
+
+  #emailStatus {
+    position: fixed; bottom: 66px; left: 50%; transform: translateX(-50%);
+    z-index: 41; display: none;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    background: #fffefb; border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 16px; box-shadow: var(--shadow);
+  }
+
+  /* ---------- Modals ---------- */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 80;
+    background: rgba(12,26,20,0.55);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-box {
+    background: var(--paper-card);
+    border-radius: 12px; max-width: 440px; width: 100%;
+    padding: 26px 26px 22px 26px;
+    box-shadow: 0 24px 60px -18px rgba(0,0,0,0.45);
+    border-top: 4px solid var(--gold);
+  }
+  .modal-box h3 {
+    margin: 0 0 8px 0; font-family: 'Playfair Display', Georgia, serif;
+    color: var(--pine); font-size: 20px;
+  }
+  .modal-box p { font-size: 14px; color: var(--ink-soft); margin: 0 0 14px 0; }
+  .modal-error {
+    display: none; color: var(--bad); font-family: 'Inter', sans-serif;
+    font-size: 12.5px; font-weight: 600; margin-bottom: 10px;
+  }
+  .modal-box input[type="password"] {
+    width: 100%; padding: 10px 12px; font-size: 15px;
+    border: 1px solid #c9bfa6; border-radius: 6px; background: #fffefb;
+    font-family: 'Inter', sans-serif;
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .modal-actions button {
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px;
+    border: none; border-radius: 999px; padding: 9px 18px; cursor: pointer;
+  }
+  .modal-list {
+    max-height: 160px; overflow-y: auto; font-family: 'Inter', sans-serif;
+    font-size: 13px; background: #fbf4e2; border-radius: 8px; padding: 10px 12px;
+    border: 1px solid var(--gold-soft); line-height: 1.9;
+  }
+
+  .copy-toast {
+    position: fixed; bottom: 68px; left: 50%; transform: translateX(-50%);
+    background: var(--pine); color: #f4efe4; font-family: 'Inter', sans-serif;
+    font-size: 12.5px; padding: 9px 18px;
+    border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    z-index: 60;
+  }
+  .copy-toast.show { opacity: 0.95; }
+
+  /* ---------- Reflection (end-of-test feedback) ---------- */
+  .reflection-card {
+    background: linear-gradient(165deg, #fffdf8 0%, #fbf4e2 100%);
+    border: 1px solid var(--gold-soft);
+    border-top: 4px solid var(--gold);
+  }
+  .reflection-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px; color: var(--pine); margin-bottom: 14px;
+  }
+  .reflection-scale {
+    display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 16px 0;
+  }
+  .reflection-option {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid #ddd3bd; background: #fffefb;
+    cursor: pointer; min-width: 84px; text-align: center;
+    transition: all 0.15s ease;
+  }
+  .reflection-option:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .reflection-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .reflection-option .reflection-emoji { font-size: 30px; line-height: 1; }
+  .reflection-option .reflection-label {
+    font-family: 'Inter', sans-serif; font-size: 11.5px; color: var(--ink-soft); font-weight: 600;
+  }
+  .reflection-option.selected {
+    border-color: var(--gold); background: #fbf0d6;
+    box-shadow: 0 4px 14px -6px rgba(180,134,59,0.5);
+  }
+  .reflection-option.selected .reflection-label { color: var(--pine); }
+  .reflection-comment { min-height: 110px; }
+
+  @media (max-width: 600px) {
+    .top-bar h1 { font-size: 23px; }
+    .status-row { gap: 8px; }
+    .container { padding: 20px 12px 120px 12px; }
+    .modal-box { padding: 20px 18px; }
+  }
+
+  /* ---------- Audio player (limited plays) ---------- */
+  .audio-card { border-left: 4px solid var(--gold); background: #fbf4e2; }
+  .audio-title { font-family: 'Inter', sans-serif; font-weight: 700; color: var(--pine); font-size: 14px; margin-bottom: 10px; }
+  .audio-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .audio-btn {
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13.5px;
+    background: var(--pine); color: #f4efe4; border: none; border-radius: 999px;
+    padding: 10px 20px; cursor: pointer; min-width: 160px;
+  }
+  .audio-btn:hover:not(:disabled) { background: var(--pine-light); }
+  .audio-btn:disabled { background: #b7c4bd; cursor: not-allowed; }
+  .audio-progress { flex: 1; min-width: 120px; height: 8px; background: #e3dcc9; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+  .audio-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--pine-light)); }
+  .audio-time { font-family: 'Inter', sans-serif; font-size: 12.5px; color: var(--ink-soft); min-width: 44px; text-align: right; }
+  .audio-plays { font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; color: #7a4a2f; margin-top: 10px; }
+  .audio-plays.empty { color: var(--bad); }
+  .cloze-reveal {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--pine); background: var(--ok-bg); border: 1px solid var(--ok);
+    border-radius: 6px; padding: 1px 7px; margin: 0 3px;
+  }
+  select.inline-blank { max-width: 100%; }
+
+  .big-banner { margin: 54px 0 0 0; padding: 18px 22px; border-radius: 12px; background: linear-gradient(155deg, var(--pine) 0%, #0c2a21 100%); color: #f4efe4; box-shadow: var(--shadow); border-bottom: 3px solid var(--gold); }
+  .big-banner h2 { margin: 0 0 4px 0; font-family: 'Playfair Display', Georgia, serif; font-size: 22px; color: #f4efe4; }
+  .big-banner p { margin: 0; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--gold-soft); }
+  .big-banner + .part-header { margin-top: 22px; }
+  .name-box.error { border-left-color: var(--terracotta); box-shadow: 0 0 0 2px var(--bad-bg); }
+  .audio-time { min-width: 84px; }
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+  <p class="eyebrow">Anh Nâng Cao &middot; Kiểm tra tháng 9</p>
+  <h1>Advanced English Proficiency Test</h1>
+  <p>Anh Nâng Cao 1 &middot; Luyện chuyên 2K13-2K14 &middot; Tổng điểm: 100 (+ Bonus) &middot; Thời gian làm bài: 90 phút</p>
+  <div class="divider-orn"></div>
+</div>
+
+<div class="status-bar">
+  <div class="status-row">
+    <div class="nav-links" id="navLinks"></div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <span class="status-chip timer" id="timerChip">90:00</span>
+      <span class="status-chip switches" id="switchChip">Rời khỏi trang: 0 lần</span>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 câu đã trả lời</div>
+</div>
+
+<div class="container">
+
+  <div class="name-box">
+    <label for="studentName">Họ và tên học sinh (bắt buộc)</label>
+    <input type="text" id="studentName" class="text-input" placeholder="Nhập họ tên đầy đủ" style="margin-top:0;">
+    <div class="sub-instructions" style="margin:8px 0 0 0;">Bài làm được tự động lưu trên trình duyệt, các em lỡ tay tắt tab sẽ không bị mất đáp án đã nhập nha hihi. Em cần nhập họ tên trước khi nộp. Khi bấm <strong>Nộp bài</strong>, bài làm được nộp và gửi thẳng đến email của giáo viên, không cần bấm thêm nút nào khác nha.</div>
+  </div>
+
+  <div id="examArea"></div>
+
+  <div class="score-box" id="scoreBox"></div>
+
+</div>
+
+<div class="footer-bar">
+  <button class="btn-submit" id="submitBtn">Nộp bài &amp; gửi cho giáo viên</button>
+  <button class="btn-email" id="retryBtn" style="display:none;">Gửi lại bài cho giáo viên</button>
+  <button class="btn-unlock" id="unlockBtn">Xem đáp án (giáo viên)</button>
+</div>
+<div id="emailStatus"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3>Quyền truy cập giáo viên</h3>
+    <p>Nhập mật khẩu để xem đáp án đúng và gợi ý chấm bài.</p>
+    <div class="modal-error" id="modalError">Sai mật khẩu, vui lòng thử lại.</div>
+    <input type="password" id="passwordInput" placeholder="Mật khẩu">
+    <div class="modal-actions">
+      <button class="btn-unlock" id="confirmUnlock">Xác nhận</button>
+      <button class="btn-secondary" id="cancelUnlock">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal-box">
+    <h3 id="confirmTitle">Bạn còn câu chưa trả lời</h3>
+    <p id="confirmText">Danh sách các câu chưa trả lời:</p>
+    <div class="modal-list" id="unansweredList"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="backToExam">Quay lại làm bài</button>
+      <button class="btn-submit" id="confirmSubmitAnyway">Vẫn nộp bài</button>
+    </div>
+  </div>
+</div>
+
+<div class="copy-toast" id="copyToast">Chức năng sao chép đã được tắt trong khi làm bài</div>
+
+<script id="examDataJson" type="application/json">{"examTitle": "ADVANCED ENGLISH PROFICIENCY TEST", "timeAllowed": 90, "parts": [{"id": "A", "label": "PART A: LISTENING (17 points)", "pending": false, "banner": "<h2>PHẦN I: ĐỀ THI CHÍNH THỨC (100 điểm)<\/h2><p>Gồm 4 phần A, B, C, D. Các em làm lần lượt từ trên xuống nha.<\/p>", "blocks": [{"type": "note", "html": "🎧 <strong>Lưu ý:<\/strong> Mỗi đoạn ghi âm được phát <strong>tối đa 2 lần<\/strong>. Các em được bấm <strong>tạm dừng<\/strong> và nghe tiếp (không bị trừ lượt), nhưng <strong>không thể tua<\/strong> đoạn ghi âm. Lượt nghe được tính ngay khi em bấm nghe từ đầu. Hãy kiểm tra tai nghe / âm lượng trước khi bắt đầu nha."}, {"type": "subheader", "title": "A.I - Multiple Choice (7 points)", "instructions": "Listen to the recording (Track 1) and choose the best answer (A, B, or C) for each question."}, {"type": "audio", "id": "track1", "title": "Audio Track 1 - Multiple Choice (Questions 1-7)", "src": "https://englishpracticetest.net/wp-content/uploads/2022/01/fce-practice-listening-test-23-part-1.mp3", "maxPlays": 2}, {"type": "mc", "num": "1", "text": "What is the gardener’s primary concern about sowing flower seeds before April?", "options": ["Spring rainfall might be insufficient for early germination.", "Ground frost during late winter could ruin the young seedlings.", "The local nursery rarely stocks early-flowering varieties until May."], "answer": 1, "auto": true}, {"type": "mc", "num": "2", "text": "Where did the two friends actually meet each other for the last time?", "options": ["At Michael’s twenty-first birthday celebration.", "At an Indian restaurant for a festive dinner.", "At Peter and Jenny’s wedding reception."], "answer": 2, "auto": true}, {"type": "mc", "num": "3", "text": "What currently attracts the woman to read children's fairy tales?", "options": ["She appreciates their timeless quality and simple charm.", "She has grown tired of complicated romantic relationships in novels.", "Modern detective plots have become too intellectually demanding."], "answer": 0, "auto": true}, {"type": "mc", "num": "4", "text": "What sport do both speakers consider to be their strongest?", "options": ["Basketball", "Tennis", "Volleyball"], "answer": 1, "auto": true}, {"type": "mc", "num": "5", "text": "What garment is the customer specifically shopping for?", "options": ["A suitable shirt to accompany a formal suit.", "A warmer casual sweater for an upcoming holiday.", "A brand-new business suit for a corporate meeting."], "answer": 0, "auto": true}, {"type": "mc", "num": "6", "text": "How does the lighting technician view his upcoming opening night?", "options": ["Anxious that a technical mistake will visibly ruin the show.", "Thrilled by the long-awaited excitement of working on live stage.", "Overwhelmed by the sole responsibility resting entirely on his shoulders."], "answer": 1, "auto": true}, {"type": "mc", "num": "7", "text": "Why does the schoolboy consider art to be the highlight of his day?", "options": ["He finds technical subjects like maths and history excessively difficult.", "His art teacher assigns significantly less homework than other instructors.", "It offers a creative space where his imagination can escape academic pressures."], "answer": 2, "auto": true}, {"type": "subheader", "title": "A.II - Sentence Completion (10 points)", "instructions": "Listen to Tom Botham’s talk on newspaper journalism (Track 2) and complete each sentence with NO MORE THAN THREE WORDS from the recording."}, {"type": "audio", "id": "track2", "title": "Audio Track 2 - Tom Botham on newspaper journalism (Questions 8-17)", "src": "https://englishpracticetest.net/wp-content/uploads/2022/01/fce-practice-listening-test-23-part-2.mp3", "maxPlays": 2}, {"type": "clozePassage", "html": "• Tom explains that journalists cover a wide spectrum of topics, including national news, commerce, sport, and {{8}}.<br><br>• While a specialized writing degree is standard, Tom entered the profession after completing his studies in {{9}}.<br><br>• In a professional training course, Tom found the module on how to conduct {{10}} to be his absolute favorite.<br><br>• When applying for positions, prospective journalists must submit a portfolio containing published {{11}}.<br><br>• Tom acquired early writing experience at university by serving as a {{12}} for a campus publication.<br><br>• Alongside solid writing competence, editors actively seek interpersonal traits such as flexibility, persistence, and {{13}}.<br><br>• Having worked part-time at his brother's company, Tom was able to offer valuable expertise in {{14}}.<br><br>• During his junior reporting days, Tom was particularly delighted whenever he was assigned to cover local {{15}}.<br><br>• In his current regional newspaper post, Tom's favorite daily duty is conducting {{16}}.<br><br>• Rather than targeting an executive editorial post, Tom is currently exploring the prospect of becoming a {{17}}.", "blanks": [{"num": "8", "kind": "text", "auto": true, "answers": ["culture"]}, {"num": "9", "kind": "text", "auto": true, "answers": ["economics"]}, {"num": "10", "kind": "text", "auto": true, "answers": ["interviews", "conducting interviews", "interview"]}, {"num": "11", "kind": "text", "auto": true, "answers": ["articles"]}, {"num": "12", "kind": "text", "auto": true, "answers": ["film critic", "a film critic"]}, {"num": "13", "kind": "text", "auto": true, "answers": ["motivation"]}, {"num": "14", "kind": "text", "auto": true, "answers": ["web design", "web-design"]}, {"num": "15", "kind": "text", "auto": true, "answers": ["football matches", "football match"]}, {"num": "16", "kind": "text", "auto": true, "answers": ["research"]}, {"num": "17", "kind": "text", "auto": true, "answers": ["photographer", "a photographer"]}]}]}, {"id": "B", "label": "PART B: LEXICO-GRAMMAR (50 points)", "pending": false, "blocks": [{"type": "subheader", "title": "B.I - Word Stress (5 points)", "instructions": "Choose the word whose main stress is placed differently from the others."}, {"type": "mc", "num": "18", "text": "Choose the word whose main stress is placed differently from the others.", "options": ["routine", "habit", "leisure", "schedule"], "answer": 0, "auto": true}, {"type": "mc", "num": "19", "text": "Choose the word whose main stress is placed differently from the others.", "options": ["stimulus", "calendar", "stagnation", "discipline"], "answer": 2, "auto": true}, {"type": "mc", "num": "20", "text": "Choose the word whose main stress is placed differently from the others.", "options": ["adolescent", "compulsory", "regression", "sustainable"], "answer": 0, "auto": true}, {"type": "mc", "num": "21", "text": "Choose the word whose main stress is placed differently from the others.", "options": ["academic", "energetic", "lethargic", "scientific"], "answer": 2, "auto": true}, {"type": "mc", "num": "22", "text": "Choose the word whose main stress is placed differently from the others.", "options": ["mitigate", "stimulate", "diminish", "allocate"], "answer": 2, "auto": true}, {"type": "subheader", "title": "B.II - Pronunciation (5 points)", "instructions": "Choose the word whose underlined part is pronounced differently from the others."}, {"type": "mc", "num": "23", "text": "Choose the word whose underlined part is pronounced differently from the others.", "options": ["relax<u>ed<\/u>", "refresh<u>ed<\/u>", "stress<u>ed<\/u>", "rest<u>ed<\/u>"], "answer": 3, "auto": true}, {"type": "mc", "num": "24", "text": "Choose the word whose underlined part is pronounced differently from the others.", "options": ["<u>ch<\/u>ord", "<u>ch<\/u>ronic", "ar<u>ch<\/u>itecture", "<u>ch<\/u>ildcare"], "answer": 3, "auto": true}, {"type": "mc", "num": "25", "text": "Choose the word whose underlined part is pronounced differently from the others.", "options": ["v<u>a<\/u>cancy", "st<u>a<\/u>gnation", "h<u>a<\/u>bit", "ad<u>a<\/u>pt"], "answer": 0, "auto": true}, {"type": "mc", "num": "26", "text": "Choose the word whose underlined part is pronounced differently from the others.", "options": ["f<u>a<\/u>tigue", "<u>a<\/u>dolescent", "<u>a<\/u>bruptly", "<u>a<\/u>dapt"], "answer": 1, "auto": true}, {"type": "mc", "num": "27", "text": "Choose the word whose underlined part is pronounced differently from the others.", "options": ["rhy<u>th<\/u>m", "brea<u>th<\/u>e", "soo<u>th<\/u>ing", "syn<u>th<\/u>etic"], "answer": 3, "auto": true}, {"type": "subheader", "title": "B.III - Lexico-Grammar Multiple Choice (20 points)", "instructions": "Choose the best answer (A, B, C, or D) to complete each sentence."}, {"type": "mc", "num": "28", "text": "To protect his valuable sheet music, the orchestra director stored it in an ________ briefcase.", "options": ["Italian antique brown leather", "antique Italian brown leather", "antique brown Italian leather", "leather antique Italian brown"], "answer": 2, "auto": true}, {"type": "mc", "num": "29", "text": "The school organized a ________ induction session to help newcomers adjust to the campus rules.", "options": ["two-hours", "two-hour", "two hours", "two-hours'"], "answer": 1, "auto": true}, {"type": "mc", "num": "30", "text": "Preparing customized revision worksheets for five different grades proved to be a highly ________ undertaking.", "options": ["time-consuming", "time-consumed", "time-consumingly", "time-consumption"], "answer": 0, "auto": true}, {"type": "mc", "num": "31", "text": "Despite intense pressure during the regional debate finals, Nam remained a remarkably ________ speaker.", "options": ["level-heading", "level-head", "levelly-headed", "level-headed"], "answer": 3, "auto": true}, {"type": "mc", "num": "32", "text": "The hospital recruited a ________ pediatrician to manage the adolescent psychiatric ward.", "options": ["high-qualified", "highly-qualified", "highly qualified", "high-qualifying"], "answer": 2, "auto": true}, {"type": "mc", "num": "33", "text": "Sitting through four continuous periods of abstract algebra left the seventh-graders completely ________.", "options": ["exhausting", "exhausted", "exhaust", "exhaustion"], "answer": 1, "auto": true}, {"type": "mc", "num": "34", "text": "The foreign transfer student had ________ knowledge of the campus layout that he repeatedly entered the wrong laboratory.", "options": ["so little", "such little", "so few", "such few"], "answer": 0, "auto": true}, {"type": "mc", "num": "35", "text": "The volume inside the dance auditorium was ________ deafening for conversational speech to be heard.", "options": ["too much", "so much", "very much", "much too"], "answer": 3, "auto": true}, {"type": "mc", "num": "36", "text": "Staring into smartphone screens past midnight suppresses melatonin secretion and disrupts your ________.", "options": ["childcare burden", "durable routine", "circadian rhythm", "academic slide"], "answer": 2, "auto": true}, {"type": "mc", "num": "37", "text": "Without a structured summer reading list, many pupils fall victim to the ________, losing months of reading fluency.", "options": ["summer slide", "seasonal vacancy", "holiday momentum", "academic stimulus"], "answer": 0, "auto": true}, {"type": "mc", "num": "38", "text": "When unexpected school closures force working parents to take unplanned leaves, overall ________ drops significantly.", "options": ["hospitality industry", "organic resonance", "physical lethargy", "workforce productivity"], "answer": 3, "auto": true}, {"type": "mc", "num": "39", "text": "Coastal hotels and travel agencies within the ________ experience record financial gains during July and August.", "options": ["manufacturing sector", "hospitality industry", "agrarian calendar", "heavy engineering"], "answer": 1, "auto": true}, {"type": "mc", "num": "40", "text": "Addictive short-form video algorithms train the adolescent brain to seek ________, deteriorating its capacity for deep focus.", "options": ["intentional silence", "disciplined practice", "instant gratification", "tactile engagement"], "answer": 2, "auto": true}, {"type": "mc", "num": "41", "text": "Constant exposure to blaring sirens and blaring notification chimes can induce severe ________ in young children.", "options": ["sensory overload", "organic resonance", "workforce output", "sustainable tempo"], "answer": 0, "auto": true}, {"type": "mc", "num": "42", "text": "After hours of digital screen exposure, taking a 20-minute walk in complete ________ can restore cognitive clarity.", "options": ["auditory stimulation", "sensory fatigue", "instant gratification", "intentional silence"], "answer": 3, "auto": true}, {"type": "mc", "num": "43", "text": "Implementing staggered recess times is seen as an effective measure to ________ playground congestion.", "options": ["stagnate", "mitigate", "refrain", "regress"], "answer": 1, "auto": true}, {"type": "mc", "num": "44", "text": "Unrelenting academic competition without sufficient rest will inevitably take a heavy ________ on student well-being.", "options": ["tax", "loss", "toll", "fine"], "answer": 2, "auto": true}, {"type": "mc", "num": "45", "text": "It took several weeks of term for the seventh-graders to get back into the ________ of structured classroom learning.", "options": ["swing", "wave", "cycle", "groove"], "answer": 0, "auto": true}, {"type": "mc", "num": "46", "text": "Instead of trying to hit the ground ________ on day one, students should steadily scale up their study hours.", "options": ["sprinting", "leaping", "flying", "running"], "answer": 3, "auto": true}, {"type": "mc", "num": "47", "text": "By maintaining a consistent schedule of daily revision, the candidate managed to gain valuable study ________.", "options": ["stagnation", "momentum", "fatigue", "vacancy"], "answer": 1, "auto": true}, {"type": "subheader", "title": "B.IV - Prepositions (5 points)", "instructions": "Write ONE suitable preposition in each blank."}, {"type": "text", "num": "48", "text": "It usually takes a fortnight for adolescent pupils to adapt __________ the demanding rhythm of academic life after the long holiday.", "answers": ["to"], "auto": true}, {"type": "text", "num": "49", "text": "A well-maintained home library is instrumental __________ fostering an enduring enthusiasm for literature.", "answers": ["in"], "auto": true}, {"type": "text", "num": "50", "text": "Medical practitioners strongly advise that adolescents refrain __________ consuming high-caffeine energy drinks before bedtime.", "answers": ["from"], "auto": true}, {"type": "text", "num": "51", "text": "Chronic sleep deprivation can take an irreparable toll __________ the physical development of young teenagers.", "answers": ["on"], "auto": true}, {"type": "text", "num": "52", "text": "Breaking long research papers into manageable steps helps pupils get back into the swing __________ daily homework.", "answers": ["of"], "auto": true}, {"type": "subheader", "title": "B.V - Word Formation (10 points)", "instructions": "Supply the correct form of the word in CAPITAL letters to fill each blank."}, {"type": "text", "num": "53", "text": "Complex polyphonic compositions provide rich auditory __________ that nourish the brain's cognitive networks. <strong>(STIMULUS)<\/strong>", "answers": ["stimuli"], "auto": true}, {"type": "text", "num": "54", "text": "Allowing young minds to remain unoccupied for three months risks trapping them in intellectual __________. <strong>(STAGNATE)<\/strong>", "answers": ["stagnation"], "auto": true}, {"type": "text", "num": "55", "text": "After binge-watching short videos late into the night, students arrived at morning assembly looking thoroughly __________. <strong>(LETHARGY)<\/strong>", "answers": ["lethargic"], "auto": true}, {"type": "text", "num": "56", "text": "Introducing balanced quarterly terms serves as a __________ policy against the severe summer slide. <strong>(MITIGATE)<\/strong>", "answers": ["mitigating"], "auto": true}, {"type": "text", "num": "57", "text": "Despite an initial __________ to take up classical cello, Duy soon developed an intense devotion to the instrument. <strong>(RELUCTANT)<\/strong>", "answers": ["reluctance"], "auto": true}, {"type": "text", "num": "58", "text": "Keeping headphone volume below 60 decibels is a __________ habit for safeguarding long-term hearing. <strong>(SUSTAIN)<\/strong>", "answers": ["sustainable"], "auto": true}, {"type": "text", "num": "59", "text": "Extended summer holidays can __________ strain lower-income families who rely heavily on school lunch initiatives. <strong>(ECONOMY)<\/strong>", "answers": ["economically"], "auto": true}, {"type": "text", "num": "60", "text": "Leaving academic muscles completely __________ over vacation makes September lessons much harder to digest. <strong>(ACT)<\/strong>", "answers": ["inactive"], "auto": true}, {"type": "text", "num": "61", "text": "Creating a designated study zone at home will __________ diminish distractions during revision hours. <strong>(SIGNIFICANT)<\/strong>", "answers": ["significantly"], "auto": true}, {"type": "text", "num": "62", "text": "Our literature instructor opened the autumn semester with a series of __________ quizzes on critical terminology. <strong>(REFRESH)<\/strong>", "answers": ["refresher"], "auto": true}, {"type": "subheader", "title": "B.VI - Verb Forms & Tenses (5 points)", "instructions": "Give the correct form of the verbs in brackets to complete each sentence."}, {"type": "text", "num": "63", "text": "<strong>(SPEND)<\/strong> __________ the entire summer traveling abroad, the students required extra time to settle into the new curriculum.", "answers": ["Having spent"], "auto": true}, {"type": "text", "num": "64", "text": "The headmaster insisted that the school's annual timetable <strong>(ADJUST)<\/strong> __________ to accommodate more periodic breaks.", "answers": ["be adjusted", "should be adjusted"], "auto": true}, {"type": "text", "num": "65", "text": "Pupils are strongly discouraged from <strong>(PERMIT)<\/strong> __________ digital notifications to interrupt their evening reading blocks.", "answers": ["permitting"], "auto": true}, {"type": "text", "num": "66", "text": "Had the family maintained an orderly bedtime routine, the child <strong>(NOT SUFFER)<\/strong> __________ from severe daytime fatigue during week one.", "answers": ["would not have suffered", "wouldn't have suffered"], "auto": true}, {"type": "text", "num": "67", "text": "Hardly __________ <strong>(the school bell / RING)<\/strong> when the pupils dashed out into the courtyard for recess.", "answers": ["had the school bell rung", "had the bell rung"], "auto": true}]}, {"id": "C", "label": "PART C: READING (16 points)", "pending": false, "blocks": [{"type": "subheader", "title": "C.I - Open Cloze (5 points)", "instructions": "Think of the word which best fits each gap. Use ONLY ONE word for each gap."}, {"type": "clozePassage", "html": "<div style='text-align:center;font-weight:700;font-size:17px;color:#10362b;margin-bottom:12px;'>Rethinking the Academic Calendar<\/div>For over a century, school systems across the world have adhered to a multi-month summer vacation. Originally conceived in agrarian societies {{68}} children were required to support agricultural labor, this calendar remains deeply entrenched. However, contemporary educationalists note that prolonged periods of inactivity lead to substantial learning losses, commonly referred to {{69}} the summer slide. In response, several progressive districts have trialed the \"balanced calendar.\" Rather than shortening total instructional time, this reform redistributes vacation days {{70}} shorter, evenly spaced breaks throughout all four seasons. Proponents point out that {{71}} only does this model preserve study momentum, but it also relieves parents of excessive childcare expenses. Consequently, it offers a sustainable alternative that ensures children remain academically engaged {{72}} losing their opportunity for genuine relaxation.", "blanks": [{"num": "68", "kind": "text", "auto": true, "answers": ["where", "when"]}, {"num": "69", "kind": "text", "auto": true, "answers": ["as"]}, {"num": "70", "kind": "text", "auto": true, "answers": ["into"]}, {"num": "71", "kind": "text", "auto": true, "answers": ["not"]}, {"num": "72", "kind": "text", "auto": true, "answers": ["without"]}]}, {"type": "subheader", "title": "C.II - Gapped Text (6 points)", "instructions": "Six sentences have been removed from the passage. Choose from sentences A-G the one which fits each gap (73-78). There is ONE extra sentence that you do not need to use."}, {"type": "note", "html": "<strong>List of sentences:<\/strong><br>A. Incremental increases in daily study duration yield far superior retention over the long term.<br>B. Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.<br>C. It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.<br>D. Furthermore, engaging in acoustic music training helps soothe academic anxieties.<br>E. When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.<br>F. Engaging in honest dialogue reassures learners that their apprehensions are widely shared.<br>G. A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."}, {"type": "clozePassage", "html": "<div style='text-align:center;font-weight:700;font-size:17px;color:#10362b;margin-bottom:12px;'>Restoring Cognitive Order After the Break<\/div>Transitioning from months of unstructured leisure back into the rigorous demands of school is rarely seamless. During holidays, adolescents typically enjoy flexible sleeping routines and immediate autonomy over their hours. {{73}} As a direct consequence, the sudden reintroduction of rigid morning alarms, strict timetables, and evaluative tests can precipitate acute fatigue.<br><br>To ease this transitional shock, proactive realignment must occur before term officially commences. Sleep hygiene represents the most decisive factor. {{74}} By shifting bedtime thirty minutes earlier each evening across the preceding week, children synchronize their biological clock without inducing daytime lethargy.<br><br>Physical workspace organization plays an equally pivotal role. A chaotic desktop strewn with electronic cables and unrelated clutter imposes an unnecessary cognitive tax. {{75}} Systematically categorizing notebooks, inspecting stationery, and eliminating distractions creates an environment of visual tranquility that fosters academic concentration.<br><br>Pacing revision requires strategic moderation. Overambitious pupils frequently attempt to study six hours on the opening weekend, rapidly precipitating mental burnout. {{76}} Dividing complex syllabi into bite-sized segments allows learners to rebuild academic momentum smoothly and sustainably.<br><br>Reconnecting socially with classmates prior to the first morning bell serves as another crucial emotional buffer. Sharing anxieties with peers helps demystify mutual apprehensions. {{77}} Realizing that friends share similar concerns provides immense psychological comfort.<br><br>Ultimately, acclimatizing to the new school term is about far more than merely surviving the opening fortnight. {{78}} Those who master the art of shifting deliberately from passive relaxation to focused intellectual effort acquire habits that will underpin lifelong academic achievement.", "blanks": [{"num": "73", "kind": "mc", "auto": true, "options": ["Incremental increases in daily study duration yield far superior retention over the long term.", "Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.", "It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.", "Furthermore, engaging in acoustic music training helps soothe academic anxieties.", "When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.", "Engaging in honest dialogue reassures learners that their apprehensions are widely shared.", "A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."], "answer": 4}, {"num": "74", "kind": "mc", "auto": true, "options": ["Incremental increases in daily study duration yield far superior retention over the long term.", "Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.", "It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.", "Furthermore, engaging in acoustic music training helps soothe academic anxieties.", "When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.", "Engaging in honest dialogue reassures learners that their apprehensions are widely shared.", "A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."], "answer": 1}, {"num": "75", "kind": "mc", "auto": true, "options": ["Incremental increases in daily study duration yield far superior retention over the long term.", "Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.", "It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.", "Furthermore, engaging in acoustic music training helps soothe academic anxieties.", "When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.", "Engaging in honest dialogue reassures learners that their apprehensions are widely shared.", "A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."], "answer": 6}, {"num": "76", "kind": "mc", "auto": true, "options": ["Incremental increases in daily study duration yield far superior retention over the long term.", "Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.", "It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.", "Furthermore, engaging in acoustic music training helps soothe academic anxieties.", "When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.", "Engaging in honest dialogue reassures learners that their apprehensions are widely shared.", "A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."], "answer": 0}, {"num": "77", "kind": "mc", "auto": true, "options": ["Incremental increases in daily study duration yield far superior retention over the long term.", "Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.", "It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.", "Furthermore, engaging in acoustic music training helps soothe academic anxieties.", "When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.", "Engaging in honest dialogue reassures learners that their apprehensions are widely shared.", "A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."], "answer": 5}, {"num": "78", "kind": "mc", "auto": true, "options": ["Incremental increases in daily study duration yield far superior retention over the long term.", "Attempting to correct a two-month circadian disruption in a single night invariably triggers daytime exhaustion.", "It presents a precious opportunity to cultivate internal self-discipline and emotional resilience.", "Furthermore, engaging in acoustic music training helps soothe academic anxieties.", "When that open freedom terminates abruptly, feeling reluctant to return to structured classrooms is natural.", "Engaging in honest dialogue reassures learners that their apprehensions are widely shared.", "A tidy, functional study station signals to the subconscious mind that purposeful focus is underway."], "answer": 2}], "letterOnly": true}, {"type": "subheader", "title": "C.III - Reading Comprehension (5 points)", "instructions": "Read the passage and choose the correct answer (A, B, C, or D) for each question."}, {"type": "passage", "html": "<div style='text-align:center;font-weight:700;font-size:17px;color:#10362b;margin-bottom:12px;'>Sensory Stimulation and the Modern Auditory Diet<\/div>Over the past decade, the rapid proliferation of algorithmic content feeds has fundamentally reshaped the sensory landscape of youth culture. Today, millions of school-aged children consume an auditory diet dominated by hyperactive 15-second music loops, accelerated pitch-shifted tracks, and relentless electronic notifications. Audio designers engineer these sound clips precisely to elicit instant gratification, triggering rapid micro-bursts of dopamine in the brain. However, cognitive neuroscientists are now sounding alarms regarding the profound developmental implications of this chronic sensory saturation.<br><br>When young minds are subjected to perpetual, high-intensity auditory stimulation, the brain’s default neural networks become hyper-reactive. The capacity to sustain deep, prolonged concentration on non-stimulating tasks, such as parsing a complex literary text or deducing a multi-step mathematical proof, erodes markedly. In clinical observations, excessive consumption of high-tempo digital sound has been directly correlated with shortened attention spans, daytime lethargy, and sensory overload. Because the adolescent brain adapts plastically to what it repeatedly experiences, constant exposure to frantic soundscapes diminishes the brain's patience for subtle acoustic nuances and contemplative quietude.<br><br>In marked contrast, deliberate engagement with acoustic music, whether through patient listening to classical symphonies or physical practice on an instrument, nourishes neural architecture. Acoustic instruments produce organic resonance, vibrating within natural harmonic frequencies that calm the nervous system rather than agitating it. Furthermore, mastering an acoustic instrument demands tactile engagement and disciplined motor coordination, providing an active physical counterweight to passive screen consumption.<br><br>To prevent cognitive decline and sensory burnout, researchers urge educational institutions to incorporate structured intervals of \"intentional silence\" into school hours. Encouraging adolescents to set stringent earphone limits and embrace quiet reflective spaces can recalibrate their natural cognitive rhythms, safeguarding both mental stamina and intellectual independence."}, {"type": "mc", "num": "79", "text": "Which best expresses the primary objective of the author in the passage?", "options": ["To advocate for the total prohibition of electronic dance music among adolescents.", "To demonstrate how classical acoustic training directly guarantees superior mathematical test scores.", "To analyze the adverse cognitive impacts of hyper-stimulating digital sound and propose restorative habits.", "To critique school systems for failing to build professional recording studios on school grounds."], "answer": 2, "auto": true}, {"type": "mc", "num": "80", "text": "The word \"saturation\" in paragraph 1 is closest in meaning to:", "options": ["dehydration", "overabundance", "moderation", "purification"], "answer": 1, "auto": true}, {"type": "mc", "num": "81", "text": "According to paragraph 2, persistent exposure to accelerated digital audio loops:", "options": ["permanently damages the physical eardrum within several weeks.", "impairs the cognitive patience required to solve complex, non-stimulating academic problems.", "eliminates the need for nighttime sleep in older teenagers.", "accelerates the acquisition of foreign language vocabularies."], "answer": 1, "auto": true}, {"type": "mc", "num": "82", "text": "Which of the following is NOT cited as a benefit of engaging with acoustic instruments?", "options": ["Experiencing natural harmonic frequencies that soothe nervous tension.", "Fostering tactile and motor coordination through disciplined physical practice.", "Delivering instant surges of dopamine without the need for patient repetition.", "Providing an active, tactile alternative to passive digital consumption."], "answer": 2, "auto": true}, {"type": "mc", "num": "83", "text": "What can be inferred from the final paragraph regarding \"intentional silence\"?", "options": ["It is a punitive measure designed by teachers to discipline noisy classrooms.", "It helps the overstimulated brain restore its baseline cognitive stamina.", "It requires complete isolation in soundproof underground bunkers.", "It has already been adopted as national policy across all major school systems."], "answer": 1, "auto": true}]}, {"id": "D", "label": "PART D: WRITING (17 points)", "pending": false, "blocks": [{"type": "subheader", "title": "D.I - Sentence Transformation (5 points)", "instructions": "Rewrite each sentence so that it has the same meaning as the original. Follow the instruction in brackets."}, {"type": "text", "num": "84", "text": "The orchestra had barely completed the opening movement when the power suddenly cut out. <strong>(Use negative inversion beginning with \"HARDLY\")<\/strong><br>Hardly __________", "answers": ["Hardly had the orchestra completed the opening movement when the power suddenly cut out."], "auto": false, "refLabel": "Đáp án gợi ý"}, {"type": "text", "num": "85", "text": "The uproar from the disgruntled festival crowd was so intense that the security team halted the event. <strong>(Use inversion beginning with \"SUCH\")<\/strong><br>Such __________", "answers": ["Such was the uproar from the disgruntled festival crowd that the security team halted the event."], "auto": false, "refLabel": "Đáp án gợi ý"}, {"type": "text", "num": "86", "text": "Although synthetic electronic tracks sound energetic, they lack the organic resonance of an acoustic cello. <strong>(Rewrite using \"AS\" to express concession)<\/strong><br>Energetic __________", "answers": ["Energetic as synthetic electronic tracks sound, they lack the organic resonance of an acoustic cello."], "auto": false, "refLabel": "Đáp án gợi ý"}, {"type": "text", "num": "87", "text": "Young pedestrians must never operate noise-canceling headphones at maximum volume while crossing busy city streets. <strong>(Use negative inversion beginning with \"UNDER NO CIRCUMSTANCES\")<\/strong><br>Under no circumstances __________", "answers": ["Under no circumstances must young pedestrians operate noise-canceling headphones at maximum volume while crossing busy city streets."], "auto": false, "refLabel": "Đáp án gợi ý"}, {"type": "text", "num": "88", "text": "The teacher delivered an extraordinarily detailed lecture, so much so that every pupil comprehended the thesis. <strong>(Rewrite using \"SO + ADJ + A/AN + NOUN\")<\/strong><br>The teacher delivered so __________", "answers": ["The teacher delivered so detailed a lecture that every pupil comprehended the thesis."], "auto": false, "refLabel": "Đáp án gợi ý"}, {"type": "essay", "num": "89", "title": "D.II - Academic Essay (12 points)", "minWords": 220, "maxWords": 250, "prompt": "Write an academic essay of approximately <strong>220-250 words<\/strong> on the following topic:<br><br><em>\"Some education policymakers propose replacing the traditional multi-month summer vacation with a 'balanced academic calendar', which distributes shorter, more frequent holiday breaks evenly across the four seasons.\"<\/em><br><br>Do you agree or disagree with this proposal? Present well-developed arguments supporting your perspective, referencing academic retention, family life, and broader economic consequences.<br><br><em>Barem chấm (12 điểm): Task Response (4) · Coherence &amp; Cohesion (3) · Lexical Resource (3) · Grammatical Range &amp; Accuracy (2).<\/em>"}, {"type": "reflection", "num": "90", "prompt": "Em đánh giá trải nghiệm học tập trong tháng 9 vừa qua như thế nào?", "commentPlaceholder": "Chia sẻ thêm điều em thích, điều em muốn cải thiện, hoặc bất kỳ điều gì em muốn nhắn gửi tới anh/chị...", "scale": [{"emoji": "😞", "label": "Chưa hài lòng"}, {"emoji": "😐", "label": "Tạm ổn"}, {"emoji": "🙂", "label": "Khá ổn"}, {"emoji": "😄", "label": "Hài lòng"}, {"emoji": "🤩", "label": "Rất hài lòng"}]}]}, {"id": "BONUS", "nav": "Bonus", "bonus": true, "label": "BONUS: THỬ THÁCH NÂNG CAO (C1-C2)", "pending": false, "banner": "<h2>PHẦN II: THỬ THÁCH NÂNG CAO (BONUS)<\/h2><p>20 câu trắc nghiệm mức C1-C2, tính điểm thưởng riêng.<\/p>", "blocks": [{"type": "note", "html": "<strong>Lưu ý:<\/strong> Phần này <strong>không bắt buộc<\/strong>, dành cho các em làm xong sớm và muốn thử sức với câu hỏi mức C1-C2. Điểm thưởng được tính riêng, không ảnh hưởng đến thang 100 điểm của đề chính thức. Bỏ trống cũng không bị trừ điểm nha."}, {"type": "subheader", "title": "Bonus - 20 Advanced Multiple Choice Questions", "instructions": "Choose the best answer (A, B, C, or D) to complete each sentence."}, {"type": "mc", "num": "B1", "text": "When handling volatile chemical solvents in the advanced laboratory, you ________.", "options": ["can be too careful", "cannot be careful enough", "cannot be too careful", "Both B and C are correct"], "answer": 3, "auto": true}, {"type": "mc", "num": "B2", "text": "The young pianist's remarkable performance was not ________ innate musical genius ________ years of grueling, disciplined daily practice.", "options": ["so much / as", "too much / that", "such as / to", "so little / but"], "answer": 0, "auto": true}, {"type": "mc", "num": "B3", "text": "The marathon runner was ________ exhausted to utter a single coherent sentence after crossing the finish line.", "options": ["too much", "so much", "much too", "very much"], "answer": 2, "auto": true}, {"type": "mc", "num": "B4", "text": "________ that two historical monuments collapsed before emergency engineers could intervene.", "options": ["To such an extent the earthquake shook", "To such an extent did the earthquake shake", "Such an extent the earthquake shook", "So much extent did the earthquake shake"], "answer": 1, "auto": true}, {"type": "mc", "num": "B5", "text": "The committee was presented with a ________ dossier detailing cross-border economic compliance.", "options": ["150-page", "150-pages", "150 page's", "150-page-long"], "answer": 0, "auto": true}, {"type": "mc", "num": "B6", "text": "Which of the following sentences contains a <strong>PUNCTUATION ERROR<\/strong> regarding compound adjectives?", "options": ["The museum houses an exceptional collection of seventeenth- and eighteenth-century manuscripts.", "His approach to diplomacy is thoroughly out of date.", "They invested in a state-of-the-art acoustic soundstage.", "She is an environmentally-conscious consumer who refuses single-use plastic."], "answer": 3, "auto": true}, {"type": "mc", "num": "B7", "text": "She delivered her critique of the controversial policy in a remarkably ________ manner, never raising her voice.", "options": ["measuredly", "measure", "measured", "immeasurably"], "answer": 2, "auto": true}, {"type": "mc", "num": "B8", "text": "Following the devastating hurricane, the national government declared the affected province a ________ zone.", "options": ["disaster-striking", "disaster-stricken", "disaster-struck", "disaster-strike"], "answer": 1, "auto": true}, {"type": "mc", "num": "B9", "text": "Rather than making a prudent, premeditated investment, he admitted that purchasing the luxury sports car was a ________ decision.", "options": ["spur-of-the-moment", "state-of-the-art", "down-to-earth", "high-and-dry"], "answer": 0, "auto": true}, {"type": "mc", "num": "B10", "text": "The executive is widely recognized as a ________ leader capable of making tough, objective calls during turbulent market shifts.", "options": ["cool-blooded", "quick-minded", "warm-hearted", "level-headed"], "answer": 3, "auto": true}, {"type": "mc", "num": "B11", "text": "The local animal shelter took custody of ________ puppies that volunteers worked around the clock to bottle-feed them.", "options": ["so few", "so little", "such little", "such few"], "answer": 2, "auto": true}, {"type": "mc", "num": "B12", "text": "His scientific breakthrough was ________ as to alter the entire trajectory of modern oncology.", "options": ["such", "so", "too", "enough"], "answer": 0, "auto": true}, {"type": "mc", "num": "B13", "text": "________ did the hurricane unleash its fury that modern steel telephone poles were snapped like matchsticks.", "options": ["So fierce", "So fiercely", "Such fiercely", "In such a fierce manner"], "answer": 1, "auto": true}, {"type": "mc", "num": "B14", "text": "The young child had ________ pocket money left that he could not even afford a return bus ticket.", "options": ["such little", "so few", "such few", "so little"], "answer": 3, "auto": true}, {"type": "mc", "num": "B15", "text": "By late August, the complete cessation of revision had brought academic progress to an absolute ________.", "options": ["standpoint", "standstill", "stand-in", "stand-off"], "answer": 1, "auto": true}, {"type": "mc", "num": "B16", "text": "Constant exposure to algorithmic feeds creates an addiction to dopamine spikes, inducing an insidious state of mental ________.", "options": ["momentum", "fortitude", "torpor", "agility"], "answer": 2, "auto": true}, {"type": "mc", "num": "B17", "text": "The acoustic quality of the newly renovated recital hall allows the subtle ________ of the antique cello to fill every row effortlessly.", "options": ["reverberations", "repercussions", "regressions", "recreations"], "answer": 0, "auto": true}, {"type": "mc", "num": "B18", "text": "________ in her personal notebook was the secret cipher needed to unlock the encrypted archive.", "options": ["Hiding carefully", "Having carefully hidden", "To hide carefully", "Carefully hidden"], "answer": 3, "auto": true}, {"type": "mc", "num": "B19", "text": "In most democratic nations, attending full-time schooling until the age of sixteen is ________ on all resident minors.", "options": ["impulsive", "compulsive", "compulsory", "repelling"], "answer": 2, "auto": true}, {"type": "mc", "num": "B20", "text": "The board voted unanimously to implement the reform, ________ that it would permanently rectify workforce absenteeism.", "options": ["convincing", "convinced", "to convince", "being convinced"], "answer": 1, "auto": true}]}]}</script>
+<script>
+// ---------- Load data ----------
+const examData = JSON.parse(document.getElementById('examDataJson').textContent);
+const TEACHER_EMAIL = "minhnguyena2k29@gmail.com";
+const PASSWORD = "anhnangcao1";
+const TOTAL_SECONDS = 90 * 60;
+
+const examArea = document.getElementById('examArea');
+const navLinks = document.getElementById('navLinks');
+
+// registry of all answerable items: {id, kind:'mc'|'text'|'clozeText'|'clozeMc'|'essay', auto, num, partId, answers/answer, options, minWords, maxWords, refLabel}
+const registry = [];
+
+function normalize(str) {
+  return (str || '').toLowerCase().trim().replace(/[.,!?;:'"()\u2018\u2019\u201c\u201d]/g, '').replace(/\s+/g, ' ');
+}
+
+function stripTags(str) {
+  return (str || '').replace(/<[^>]+>/g, '');
+}
+
+function el(tag, className, html) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+function renderClozeHtml(html, blanks, letterOnly) {
+  let out = html;
+  blanks.forEach(b => {
+    const token = '{{' + b.num + '}}';
+    let inputHtml = '';
+    if (b.kind === 'text') {
+      inputHtml = '<input type="text" class="inline-blank" id="ans_' + b.num + '" data-num="' + b.num + '" placeholder="(' + b.num + ')" autocomplete="off">';
+    } else {
+      let opts = '<option value="">(' + b.num + ')</option>';
+      b.options.forEach((opt, idx) => {
+        const letter = String.fromCharCode(65 + idx);
+        opts += '<option value="' + idx + '">' + (letterOnly ? letter : letter + '. ' + opt.replace(/"/g, '&quot;')) + '</option>';
+      });
+      inputHtml = '<select class="inline-blank" id="ans_' + b.num + '" data-num="' + b.num + '">' + opts + '</select>';
+    }
+    out = out.split(token).join(inputHtml);
+  });
+  return out;
+}
+
+function buildNavLinks() {
+  examData.parts.forEach(p => {
+    const a = document.createElement('a');
+    a.href = '#part-' + p.id;
+    a.textContent = p.nav || ('Phần ' + p.id);
+    navLinks.appendChild(a);
+  });
+}
+
+function renderExam() {
+  examData.parts.forEach(part => {
+    if (part.banner) examArea.appendChild(el('div', 'big-banner', part.banner));
+    const header = el('div', 'part-header', '<h2 id="part-' + part.id + '">' + part.label + '</h2>');
+    examArea.appendChild(header);
+
+    if (part.pending) {
+      if (part.pendingNote) examArea.appendChild(el('div', 'part-pending', part.pendingNote));
+      return;
+    }
+
+    part.blocks.forEach(block => {
+      if (block.type === 'subheader') {
+        examArea.appendChild(el('div', 'sub-header', block.title));
+        if (block.instructions) examArea.appendChild(el('div', 'sub-instructions', block.instructions));
+      } else if (block.type === 'note') {
+        examArea.appendChild(el('div', 'note-box', block.html));
+      } else if (block.type === 'reflection') {
+        const card = el('div', 'card reflection-card');
+        card.id = 'q_' + part.id + '_' + block.num;
+        let scaleHtml = '<div class="reflection-scale">';
+        block.scale.forEach((s, idx) => {
+          scaleHtml += '<label class="reflection-option"><input type="radio" name="reflectionRating" value="' + idx + '">' +
+            '<span class="reflection-emoji">' + s.emoji + '</span><span class="reflection-label">' + s.label + '</span></label>';
+        });
+        scaleHtml += '</div>';
+        let inner = '<div class="reflection-title">' + block.prompt + '</div>' + scaleHtml;
+        inner += '<textarea class="essay-area reflection-comment" id="reflectionComment" placeholder="' + (block.commentPlaceholder || '').replace(/"/g, '&quot;') + '"></textarea>';
+        card.innerHTML = inner;
+        examArea.appendChild(card);
+        card.querySelectorAll('.reflection-option input').forEach(inp => {
+          inp.addEventListener('change', () => {
+            card.querySelectorAll('.reflection-option').forEach(l => l.classList.remove('selected'));
+            inp.closest('.reflection-option').classList.add('selected');
+          });
+        });
+      } else if (block.type === 'audio') {
+        examArea.appendChild(buildAudioPlayer(block));
+      } else if (block.type === 'passage') {
+        examArea.appendChild(el('div', 'card passage-box', block.html));
+      } else if (block.type === 'mc') {
+        const card = el('div', 'card');
+        card.id = 'q_' + part.id + '_' + block.num;
+        let inner = '<div class="q-text"><span class="q-num">' + block.num + '</span>' + block.text + (block.auto ? '' : ' <span class="manual-tag">GV chấm</span>') + '</div>';
+        inner += '<div class="options-grid">';
+        block.options.forEach((opt, idx) => {
+          const letter = String.fromCharCode(65 + idx);
+          inner += '<label class="option-label"><input type="radio" name="mc_' + part.id + '_' + block.num + '" value="' + idx + '"> ' + letter + '. ' + opt.replace(/"/g, '&quot;') + '</label>';
+        });
+        inner += '</div>';
+        inner += '<div class="answer-reveal" id="reveal_' + part.id + '_' + block.num + '"></div>';
+        card.innerHTML = inner;
+        examArea.appendChild(card);
+        registry.push({ id: part.id + '_' + block.num, kind: 'mc', auto: block.auto, num: block.num, partId: part.id, bonus: !!part.bonus, answer: block.answer, options: block.options, text: block.text });
+      } else if (block.type === 'text') {
+        const card = el('div', 'card');
+        card.id = 'q_' + part.id + '_' + block.num;
+        let inner = '<div class="q-text"><span class="q-num">' + block.num + '</span>' + block.text + (block.auto ? '' : ' <span class="manual-tag">GV chấm</span>') + '</div>';
+        inner += '<input type="text" class="text-input" id="ans_' + part.id + '_' + block.num + '" placeholder="Nhập câu trả lời" autocomplete="off">';
+        inner += '<div class="answer-reveal" id="reveal_' + part.id + '_' + block.num + '"></div>';
+        card.innerHTML = inner;
+        examArea.appendChild(card);
+        registry.push({ id: part.id + '_' + block.num, kind: 'text', auto: block.auto, num: block.num, partId: part.id, bonus: !!part.bonus, answers: block.answers, refLabel: block.refLabel, text: block.text });
+      } else if (block.type === 'clozePassage') {
+        const card = el('div', 'card passage-box');
+        card.innerHTML = renderClozeHtml(block.html, block.blanks, block.letterOnly);
+        examArea.appendChild(card);
+        block.blanks.forEach(b => {
+          registry.push({
+            id: part.id + '_' + b.num, kind: b.kind === 'mc' ? 'clozeMc' : 'clozeText', auto: b.auto,
+            num: b.num, partId: part.id, bonus: !!part.bonus, answers: b.answers, answer: b.answer, options: b.options
+          });
+        });
+      } else if (block.type === 'essay') {
+        const card = el('div', 'card');
+        card.id = 'q_' + part.id + '_' + block.num;
+        let inner = '<div class="q-text"><span class="q-num">' + block.title + '</span> <span class="manual-tag">GV chấm</span></div>';
+        inner += '<div style="margin-top:8px;">' + block.prompt + '</div>';
+        inner += '<textarea class="essay-area" id="ans_' + part.id + '_' + block.num + '" placeholder="Viết bài luận của bạn ở đây..."></textarea>';
+        inner += '<div class="essay-meta" id="wordCount_' + part.id + '_' + block.num + '">0 từ</div>';
+        card.innerHTML = inner;
+        examArea.appendChild(card);
+        registry.push({ id: part.id + '_' + block.num, kind: 'essay', auto: false, num: block.num, partId: part.id, bonus: !!part.bonus, minWords: block.minWords, maxWords: block.maxWords });
+      }
+    });
+  });
+}
+
+function getAnswerValue(item) {
+  if (item.kind === 'mc') {
+    const checked = document.querySelector('input[name="mc_' + item.partId + '_' + item.num + '"]:checked');
+    return checked ? parseInt(checked.value, 10) : null;
+  } else if (item.kind === 'text') {
+    const elx = document.getElementById('ans_' + item.partId + '_' + item.num);
+    return elx ? elx.value : '';
+  } else if (item.kind === 'clozeText') {
+    const elx = document.getElementById('ans_' + item.num);
+    return elx ? elx.value : '';
+  } else if (item.kind === 'clozeMc') {
+    const elx = document.getElementById('ans_' + item.num);
+    return elx && elx.value !== '' ? parseInt(elx.value, 10) : null;
+  } else if (item.kind === 'essay') {
+    const elx = document.getElementById('ans_' + item.partId + '_' + item.num);
+    return elx ? elx.value : '';
+  }
+  return '';
+}
+
+function isAnswered(item) {
+  const v = getAnswerValue(item);
+  if (item.kind === 'mc' || item.kind === 'clozeMc') return v !== null && v !== undefined;
+  return v && v.trim && v.trim() !== '';
+}
+
+function isCorrect(item) {
+  if (item.kind === 'mc' || item.kind === 'clozeMc') {
+    const v = getAnswerValue(item);
+    return v !== null && v === item.answer;
+  }
+  if (item.kind === 'text' || item.kind === 'clozeText') {
+    const v = normalize(getAnswerValue(item));
+    return (item.answers || []).some(a => normalize(a) === v);
+  }
+  return false;
+}
+
+function updateProgress() {
+  const main = registry.filter(i => !i.bonus), bon = registry.filter(i => i.bonus);
+  const a = main.filter(isAnswered).length, b = bon.filter(isAnswered).length;
+  const pct = main.length ? Math.round((a / main.length) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = a + ' / ' + main.length + ' câu đã trả lời (' + pct + '%)' + (bon.length ? ' · Bonus: ' + b + ' / ' + bon.length : '');
+  updateEssayWordCounts();
+}
+
+function updateEssayWordCounts() {
+  registry.filter(i => i.kind === 'essay').forEach(item => {
+    const elx = document.getElementById('ans_' + item.partId + '_' + item.num);
+    const label = document.getElementById('wordCount_' + item.partId + '_' + item.num);
+    if (!elx || !label) return;
+    const words = elx.value.trim() === '' ? 0 : elx.value.trim().split(/\s+/).length;
+    label.textContent = words + ' từ' + (item.minWords ? ' (yêu cầu ' + item.minWords + '-' + item.maxWords + ' từ)' : '');
+    label.classList.toggle('over-under', !!item.minWords && words > 0 && (words < item.minWords || words > item.maxWords));
+  });
+}
+
+examArea.addEventListener('change', () => { updateProgress(); saveState(); });
+examArea.addEventListener('input', () => { updateProgress(); saveState(); });
+document.getElementById('studentName').addEventListener('input', saveState);
+document.getElementById('studentName').addEventListener('input', () => document.querySelector('.name-box').classList.remove('error'));
+document.getElementById('studentName').addEventListener('change', saveState);
+
+// ---------- Audio player (max plays) ----------
+let audioPlays = {};
+const audioPlayers = [];
+
+function fmtAudioTime(s) {
+  if (!isFinite(s) || s < 0) s = 0;
+  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+
+function buildAudioPlayer(block) {
+  const max = block.maxPlays || 2;
+  const card = el('div', 'card audio-card');
+  card.innerHTML =
+    '<div class="audio-title">🎧 ' + block.title + '</div>' +
+    '<div class="audio-row"><button type="button" class="audio-btn"></button>' +
+    '<div class="audio-progress"><div class="audio-progress-fill"></div></div>' +
+    '<span class="audio-time">0:00</span></div>' +
+    '<div class="audio-plays"></div>';
+  const btn = card.querySelector('.audio-btn');
+  const fill = card.querySelector('.audio-progress-fill');
+  const timeEl = card.querySelector('.audio-time');
+  const playsEl = card.querySelector('.audio-plays');
+
+  const audio = new Audio();
+  audio.preload = 'auto';
+  audio.src = block.src;
+
+  const player = { id: block.id, audio: audio, state: 'idle', refresh: null };
+  const used = () => audioPlays[block.id] || 0;
+  let lastTime = 0;
+
+  player.refresh = function () {
+    const left = Math.max(0, max - used());
+    playsEl.textContent = 'Lượt nghe còn lại: ' + left + ' / ' + max;
+    playsEl.classList.toggle('empty', left === 0);
+    if (examLocked) { btn.disabled = true; btn.textContent = 'Đã nộp bài'; return; }
+    if (player.state === 'playing') { btn.disabled = false; btn.textContent = '⏸ Tạm dừng'; }
+    else if (player.state === 'paused') { btn.disabled = false; btn.textContent = '▶ Tiếp tục nghe'; }
+    else if (left === 0) { btn.disabled = true; btn.textContent = 'Đã hết lượt nghe'; }
+    else { btn.disabled = false; btn.textContent = used() === 0 ? '▶ Bấm để nghe' : '▶ Nghe lần ' + (used() + 1); }
+  };
+
+  btn.addEventListener('click', () => {
+    if (examLocked) return;
+    if (player.state === 'playing') { audio.pause(); return; }
+    if (player.state === 'paused') { audio.play().catch(() => {}); return; }   // nghe tiếp sau khi tạm dừng, không trừ lượt
+    if (used() >= max) return;
+    btn.disabled = true;
+    lastTime = 0;
+    audio.currentTime = 0;
+    const p = audio.play();
+    const started = () => {
+      audioPlays[block.id] = used() + 1;   // trừ lượt khi bắt đầu nghe từ đầu
+      player.state = 'playing';
+      saveState();
+      player.refresh();
+    };
+    if (p && p.then) {
+      p.then(started).catch(() => {
+        player.state = 'idle';
+        player.refresh();
+        playsEl.textContent = 'Không phát được audio. Kiểm tra mạng rồi thử lại (lượt nghe chưa bị trừ).';
+      });
+    } else { started(); }
+  });
+
+  // chặn tua: mọi lần nhảy vị trí đều bị đưa về điểm đang nghe
+  audio.addEventListener('seeking', () => {
+    if (Math.abs(audio.currentTime - lastTime) > 1) audio.currentTime = lastTime;
+  });
+  audio.addEventListener('ratechange', () => { if (audio.playbackRate !== 1) audio.playbackRate = 1; });
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.seeking) lastTime = audio.currentTime;
+    const d = audio.duration;
+    fill.style.width = (d && isFinite(d)) ? Math.min(100, (audio.currentTime / d) * 100) + '%' : '0%';
+    timeEl.textContent = fmtAudioTime(audio.currentTime) + (d && isFinite(d) ? ' / ' + fmtAudioTime(d) : '');
+  });
+  audio.addEventListener('pause', () => {
+    if (player.state === 'playing' && !audio.ended && !examLocked) { player.state = 'paused'; player.refresh(); }
+  });
+  audio.addEventListener('play', () => {
+    if (player.state === 'paused') { player.state = 'playing'; player.refresh(); }
+  });
+  audio.addEventListener('ended', () => {
+    player.state = 'idle';
+    lastTime = 0;
+    fill.style.width = '0%';
+    timeEl.textContent = '0:00';
+    player.refresh();
+  });
+
+  audioPlayers.push(player);
+  player.refresh();
+  return card;
+}
+
+function disableAudio() {
+  audioPlayers.forEach(p => { p.audio.pause(); p.state = 'idle'; p.refresh(); });
+}
+
+// ---------- Submit / grading ----------
+let examLocked = false;
+let emailSent = false;
+
+function lockAllInputs() {
+  examArea.querySelectorAll('input, select, textarea').forEach(i => i.disabled = true);
+}
+
+function gradeExam() {
+  let autoScore = 0, autoTotal = 0, bonusScore = 0, bonusTotal = 0;
+  registry.forEach(item => {
+    if (item.kind === 'mc' || item.kind === 'clozeMc') {
+      const inputEl = item.kind === 'mc' ? null : document.getElementById('ans_' + item.num);
+      const correct = isCorrect(item);
+      if (item.auto) { if (item.bonus) { bonusTotal++; if (correct) bonusScore++; } else { autoTotal++; if (correct) autoScore++; } }
+      if (item.kind === 'mc') {
+        const card = document.getElementById('q_' + item.partId + '_' + item.num);
+        card.querySelectorAll('.option-label').forEach(l => l.classList.remove('correct', 'incorrect'));
+        const checked = document.querySelector('input[name="mc_' + item.partId + '_' + item.num + '"]:checked');
+        if (checked && item.auto) checked.closest('.option-label').classList.add(correct ? 'correct' : 'incorrect');
+      } else {
+        if (inputEl && item.auto) {
+          inputEl.classList.remove('correct', 'incorrect');
+          if (inputEl.value !== '') inputEl.classList.add(correct ? 'correct' : 'incorrect');
+        }
+      }
+    } else if (item.kind === 'text' || item.kind === 'clozeText') {
+      const correct = isCorrect(item);
+      if (item.auto) { if (item.bonus) { bonusTotal++; if (correct) bonusScore++; } else { autoTotal++; if (correct) autoScore++; } }
+      const inputEl = item.kind === 'text' ? document.getElementById('ans_' + item.partId + '_' + item.num) : document.getElementById('ans_' + item.num);
+      if (inputEl && item.auto) {
+        inputEl.classList.remove('correct', 'incorrect');
+        if (inputEl.value !== '') inputEl.classList.add(correct ? 'correct' : 'incorrect');
+      }
+    }
+  });
+  return { autoScore, autoTotal, bonusScore, bonusTotal };
+}
+
+function getUnansweredList() {
+  const list = [];
+  registry.forEach(item => { if (!item.bonus && !isAnswered(item)) list.push(item); });
+  return list;
+}
+
+function doSubmit(skipSend) {
+  examLocked = true;
+  const { autoScore, autoTotal, bonusScore, bonusTotal } = gradeExam();
+  lockAllInputs();
+  disableAudio();
+  document.body.classList.remove('exam-active');
+
+  const manualCount = registry.filter(i => !i.auto).length;
+  const scoreBox = document.getElementById('scoreBox');
+  scoreBox.style.display = 'block';
+  scoreBox.innerHTML =
+    '<p><strong>Điểm tự động chấm: ' + autoScore + ' / ' + autoTotal + '</strong> (Phần A, B và C)</p>' +
+    '<p>Bonus: <strong>' + bonusScore + ' / ' + bonusTotal + '</strong> câu trắc nghiệm thử thách.</p>' +
+    '<p>Còn ' + manualCount + ' câu/mục (D.I và D.II - bài luận) cần giáo viên chấm trực tiếp.</p>' +
+    '<p>Số lần rời khỏi trang trong khi làm bài: ' + tabSwitchCount + '</p>';
+  if (scoreBox.scrollIntoView) scoreBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  document.getElementById('submitBtn').disabled = true;
+  stopTimer();
+  saveState();
+
+  if (skipSend) {
+    if (!emailSent) showEmailStatus('Bài đã nộp nhưng chưa gửi được cho giáo viên. Bấm "Gửi lại bài cho giáo viên".', '#a8402d', true);
+    else showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
+  } else {
+    sendResultEmail();
+  }
+}
+
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const nameEl = document.getElementById('studentName');
+  if (nameEl.value.trim() === '') {
+    const box = nameEl.closest('.name-box');
+    box.classList.add('error');
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    nameEl.focus();
+    alert('Em nhớ nhập họ và tên trước khi nộp bài nha.');
+    return;
+  }
+  const unanswered = getUnansweredList();
+  if (unanswered.length > 0) {
+    const listBox = document.getElementById('unansweredList');
+    listBox.innerHTML = unanswered.map(i => 'Phần ' + i.partId + ' - Câu ' + i.num).join('<br>');
+    document.getElementById('confirmText').textContent = 'Bạn còn ' + unanswered.length + ' câu chưa trả lời:';
+    document.getElementById('confirmOverlay').style.display = 'flex';
+  } else {
+    doSubmit();
+  }
+});
+document.getElementById('backToExam').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').style.display = 'none';
+});
+document.getElementById('confirmSubmitAnyway').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').style.display = 'none';
+  doSubmit();
+});
+
+// ---------- Email (tự động gửi khi nộp bài) ----------
+function showEmailStatus(msg, color, showRetry) {
+  const status = document.getElementById('emailStatus');
+  status.style.display = 'block';
+  status.style.color = color;
+  status.textContent = msg;
+  document.getElementById('retryBtn').style.display = showRetry ? 'inline-block' : 'none';
+  document.getElementById('retryBtn').disabled = false;
+}
+
+function sendResultEmail() {
+  const name = document.getElementById('studentName').value.trim() || "Học sinh chưa ghi tên";
+  const { autoScore, autoTotal, bonusScore, bonusTotal } = gradeExam();
+
+  let lines = [];
+  lines.push("Học sinh: " + name);
+  lines.push("Đề: ADVANCED ENGLISH PROFICIENCY TEST - Kiểm tra cuối tháng 9 (Anh Nâng Cao 1)");
+  lines.push("Điểm tự động chấm (Phần A, B, C): " + autoScore + " / " + autoTotal);
+  lines.push("Bonus (trắc nghiệm): " + bonusScore + " / " + bonusTotal);
+  lines.push("Số lần rời khỏi trang khi làm bài: " + tabSwitchCount);
+  audioPlayers.forEach(p => {
+    lines.push("Lượt nghe " + p.id + ": " + (audioPlays[p.id] || 0) + " lần");
+  });
+  lines.push("");
+
+  examData.parts.forEach(part => {
+    if (part.pending) return;
+    lines.push("=== PHẦN " + part.id + " ===");
+    registry.filter(i => i.partId === part.id).forEach(item => {
+      const v = getAnswerValue(item);
+      let display = '';
+      if (item.kind === 'mc' || item.kind === 'clozeMc') {
+        display = (v !== null && v !== undefined) ? String.fromCharCode(65 + v) + '. ' + stripTags(item.options[v]) : '(không trả lời)';
+      } else {
+        display = (v && v.trim() !== '') ? v : '(không trả lời)';
+      }
+      let tag = '';
+      if (item.auto) tag = isCorrect(item) ? ' [đúng]' : ' [sai]';
+      else tag = ' [GV chấm]';
+      lines.push('Câu ' + item.num + ': ' + display + tag);
+    });
+    lines.push('');
+  });
+
+  let reflectionBlock = null;
+  examData.parts.forEach(part => {
+    (part.blocks || []).forEach(b => { if (b.type === 'reflection') reflectionBlock = b; });
+  });
+  if (reflectionBlock) {
+    lines.push("=== PHẢN HỒI HỌC TẬP THÁNG 9 ===");
+    const checked = document.querySelector('input[name="reflectionRating"]:checked');
+    const ratingText = checked ? reflectionBlock.scale[parseInt(checked.value, 10)].label : '(chưa đánh giá)';
+    const commentEl = document.getElementById('reflectionComment');
+    const comment = commentEl && commentEl.value.trim() !== '' ? commentEl.value.trim() : '(không có)';
+    lines.push('Mức độ hài lòng: ' + ratingText);
+    lines.push('Chia sẻ thêm: ' + comment);
+    lines.push('');
+  }
+
+  document.getElementById('retryBtn').style.display = 'none';
+  showEmailStatus('Đang gửi bài cho giáo viên...', '#4b5b54', false);
+
+  fetch("https://formsubmit.co/ajax/" + TEACHER_EMAIL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify({
+      _subject: "Kết quả bài kiểm tra tháng 9 - " + name,
+      name: name,
+      score: autoScore + " / " + autoTotal + " (bonus " + bonusScore + " / " + bonusTotal + ")",
+      _captcha: "false",
+      tab_switches: String(tabSwitchCount),
+      answers: lines.join("\n")
+    })
+  })
+  .then(res => res.json().then(data => ({ ok: res.ok, data: data })))
+  .then(r => {
+    if (!r.ok || String(r.data && r.data.success) === 'false') throw new Error('send failed');
+    emailSent = true;
+    saveState();
+    showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
+  })
+  .catch(() => {
+    showEmailStatus('Bài đã nộp nhưng gửi email thất bại. Kiểm tra mạng rồi bấm "Gửi lại bài cho giáo viên".', '#a8402d', true);
+  });
+}
+document.getElementById('retryBtn').addEventListener('click', sendResultEmail);
+
+// ---------- Teacher unlock / reveal answers ----------
+document.getElementById('unlockBtn').addEventListener('click', () => {
+  document.getElementById('modalOverlay').style.display = 'flex';
+  document.getElementById('modalError').style.display = 'none';
+  document.getElementById('passwordInput').value = '';
+});
+document.getElementById('cancelUnlock').addEventListener('click', () => {
+  document.getElementById('modalOverlay').style.display = 'none';
+});
+document.getElementById('confirmUnlock').addEventListener('click', tryUnlock);
+document.getElementById('passwordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+
+function tryUnlock() {
+  const entered = document.getElementById('passwordInput').value;
+  if (entered === PASSWORD) {
+    document.getElementById('modalOverlay').style.display = 'none';
+    registry.forEach(item => {
+      let text = '', shortText = '';
+      if (item.kind === 'mc' || item.kind === 'clozeMc') {
+        text = 'Đáp án đúng: ' + String.fromCharCode(65 + item.answer) + '. ' + item.options[item.answer];
+        shortText = String.fromCharCode(65 + item.answer);
+      } else if (item.kind === 'text' || item.kind === 'clozeText') {
+        const label = item.refLabel ? item.refLabel : 'Đáp án';
+        text = label + ': ' + item.answers.join(' / ');
+        shortText = item.answers.join(' / ');
+      } else {
+        return;
+      }
+      let reveal = document.getElementById('reveal_' + item.partId + '_' + item.num);
+      if (!reveal) reveal = document.getElementById('reveal_' + item.num);
+      if (reveal) { reveal.style.display = 'block'; reveal.innerHTML = text; }
+      else {
+        const inp = document.getElementById('ans_' + item.num);
+        if (inp && !document.getElementById('clozeRev_' + item.num)) {
+          const s = document.createElement('span');
+          s.className = 'cloze-reveal';
+          s.id = 'clozeRev_' + item.num;
+          s.textContent = '✓ ' + shortText;
+          inp.insertAdjacentElement('afterend', s);
+        }
+      }
+    });
+  } else {
+    document.getElementById('modalError').style.display = 'block';
+  }
+}
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'modalOverlay') document.getElementById('modalOverlay').style.display = 'none';
+});
+
+// ---------- Timer ----------
+let secondsLeft = TOTAL_SECONDS;
+let timerInterval = null;
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+}
+function updateTimerDisplay() {
+  const chip = document.getElementById('timerChip');
+  chip.textContent = formatTime(Math.max(secondsLeft, 0));
+  chip.classList.toggle('low', secondsLeft <= 300);
+}
+function tickTimer() {
+  secondsLeft--;
+  updateTimerDisplay();
+  saveState();
+  if (secondsLeft <= 0) {
+    stopTimer();
+    if (!examLocked) {
+      doSubmit();
+      alert('Đã hết 90 phút làm bài. Bài làm đã được tự động nộp và gửi cho giáo viên.');
+    }
+  }
+}
+function startTimer() { timerInterval = setInterval(tickTimer, 1000); }
+function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
+
+// ---------- Tab switch / exit counter ----------
+let tabSwitchCount = 0;
+function registerSwitch() {
+  if (examLocked) return;
+  tabSwitchCount++;
+  document.getElementById('switchChip').textContent = 'Rời khỏi trang: ' + tabSwitchCount + ' lần';
+  saveState();
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) registerSwitch(); });
+window.addEventListener('blur', registerSwitch);
+
+// ---------- Local persistence (autosave / resume) ----------
+const STORAGE_KEY = 'examState_ancChuyen2K1314_ktCuoiThang9_v1';
+
+function saveState() {
+  try {
+    const answers = {};
+    registry.forEach(item => { answers[item.id] = getAnswerValue(item); });
+    const reflectionChecked = document.querySelector('input[name="reflectionRating"]:checked');
+    const commentEl = document.getElementById('reflectionComment');
+    const nameEl = document.getElementById('studentName');
+    const state = {
+      studentName: nameEl ? nameEl.value : '',
+      answers: answers,
+      reflectionRating: reflectionChecked ? reflectionChecked.value : null,
+      reflectionComment: commentEl ? commentEl.value : '',
+      tabSwitchCount: tabSwitchCount,
+      secondsLeft: secondsLeft,
+      examLocked: examLocked,
+      emailSent: emailSent,
+      audioPlays: audioPlays,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) { /* localStorage không khả dụng - bỏ qua autosave */ }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+
+function restoreState() {
+  const state = loadState();
+  if (!state) return;
+
+  const nameEl = document.getElementById('studentName');
+  if (nameEl && state.studentName) nameEl.value = state.studentName;
+
+  registry.forEach(item => {
+    const v = state.answers ? state.answers[item.id] : undefined;
+    if (v === null || v === undefined || v === '') return;
+    if (item.kind === 'mc') {
+      const inputEl = document.querySelector('input[name="mc_' + item.partId + '_' + item.num + '"][value="' + v + '"]');
+      if (inputEl) inputEl.checked = true;
+    } else if (item.kind === 'clozeMc' || item.kind === 'clozeText') {
+      const elx = document.getElementById('ans_' + item.num);
+      if (elx) elx.value = v;
+    } else {
+      const elx = document.getElementById('ans_' + item.partId + '_' + item.num);
+      if (elx) elx.value = v;
+    }
+  });
+
+  if (state.reflectionRating !== null && state.reflectionRating !== undefined) {
+    const radio = document.querySelector('input[name="reflectionRating"][value="' + state.reflectionRating + '"]');
+    if (radio) {
+      radio.checked = true;
+      const label = radio.closest('.reflection-option');
+      if (label) label.classList.add('selected');
+    }
+  }
+  const commentEl = document.getElementById('reflectionComment');
+  if (commentEl && state.reflectionComment) commentEl.value = state.reflectionComment;
+
+  if (typeof state.tabSwitchCount === 'number') {
+    tabSwitchCount = state.tabSwitchCount;
+    document.getElementById('switchChip').textContent = 'Rời khỏi trang: ' + tabSwitchCount + ' lần';
+  }
+  if (typeof state.secondsLeft === 'number') {
+    secondsLeft = Math.max(0, Math.min(TOTAL_SECONDS, state.secondsLeft));
+  }
+  updateTimerDisplay();
+
+  if (state.audioPlays && typeof state.audioPlays === 'object') {
+    audioPlays = state.audioPlays;
+    audioPlayers.forEach(p => p.refresh());
+  }
+  emailSent = !!state.emailSent;
+
+  if (state.examLocked) {
+    doSubmit(true);
+  }
+}
+
+window.addEventListener('beforeunload', saveState);
+
+// ---------- Anti-copy deterrents ----------
+let toastTimeout = null;
+function showCopyToast() {
+  const toast = document.getElementById('copyToast');
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 1800);
+}
+document.addEventListener('contextmenu', (e) => { e.preventDefault(); showCopyToast(); });
+document.addEventListener('copy', (e) => { e.preventDefault(); showCopyToast(); });
+document.addEventListener('cut', (e) => { e.preventDefault(); showCopyToast(); });
+document.addEventListener('selectstart', (e) => {
+  const tag = e.target.tagName;
+  if (tag !== 'INPUT' && tag !== 'TEXTAREA') e.preventDefault();
+});
+document.addEventListener('keydown', (e) => {
+  const key = e.key ? e.key.toLowerCase() : '';
+  const blockedCombo = (e.ctrlKey || e.metaKey) && ['c', 'u', 's', 'x'].includes(key);
+  const devTools = key === 'f12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(key));
+  if (blockedCombo || devTools) {
+    e.preventDefault();
+    showCopyToast();
+  }
+});
+
+// ---------- Init ----------
+buildNavLinks();
+renderExam();
+restoreState();
+updateProgress();
+if (!examLocked) {
+  document.body.classList.add('exam-active');
+  startTimer();
+}
+
+</script>
+</body>
+</html>
