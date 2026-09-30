@@ -351,15 +351,7 @@
     font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
     background: #fffefb; border: 1px solid var(--line); border-radius: 8px;
     padding: 8px 16px; box-shadow: var(--shadow);
-    max-width: 92vw; text-align: center;
   }
-  #emailFallback { display: none; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
-  #emailFallback button {
-    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px;
-    border: none; border-radius: 999px; padding: 8px 14px; cursor: pointer;
-    touch-action: manipulation;
-  }
-  .footer-bar button { touch-action: manipulation; }
 
   /* ---------- Modals ---------- */
   .modal-overlay {
@@ -520,12 +512,7 @@
   <button class="btn-email" id="retryBtn" style="display:none;">Gửi lại bài cho giáo viên</button>
   <button class="btn-unlock" id="unlockBtn">Xem đáp án (giáo viên)</button>
 </div>
-<div id="emailStatus"><span id="emailStatusMsg"></span>
-  <div id="emailFallback">
-    <button type="button" class="btn-email" id="gmailFallbackBtn">✉ Gửi qua Gmail</button>
-    <button type="button" class="btn-secondary" id="downloadFallbackBtn">⬇ Tải file kết quả</button>
-  </div>
-</div>
+<div id="emailStatus"></div>
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
@@ -558,7 +545,7 @@
 <script>
 // ---------- Load data ----------
 const examData = JSON.parse(document.getElementById('examDataJson').textContent);
-const TEACHER_EMAIL = "ddangminh1905@gmail.com";
+const TEACHER_EMAIL = "minhnguyena2k29@gmail.com";
 const PASSWORD = "anhnangcao1";
 const TOTAL_SECONDS = 90 * 60;
 
@@ -861,11 +848,7 @@ function buildAudioPlayer(block) {
 }
 
 function disableAudio() {
-  audioPlayers.forEach(p => {
-    p.state = 'idle';
-    try { p.audio.pause(); p.audio.removeAttribute('src'); p.audio.load(); } catch (e) {}
-    p.refresh();
-  });
+  audioPlayers.forEach(p => { p.audio.pause(); p.state = 'idle'; p.refresh(); });
 }
 
 // ---------- Submit / grading ----------
@@ -915,34 +898,30 @@ function getUnansweredList() {
 
 function doSubmit(skipSend) {
   examLocked = true;
-  let grade = { autoScore: 0, autoTotal: 0, bonusScore: 0, bonusTotal: 0 };
-  try { grade = gradeExam(); } catch (e) { console.error(e); }
+  const { autoScore, autoTotal, bonusScore, bonusTotal } = gradeExam();
+  lockAllInputs();
+  disableAudio();
+  document.body.classList.remove('exam-active');
+
+  const manualCount = registry.filter(i => !i.auto).length;
+  const scoreBox = document.getElementById('scoreBox');
+  scoreBox.style.display = 'block';
+  scoreBox.innerHTML =
+    '<p><strong>Điểm tự động chấm: ' + autoScore + ' / ' + autoTotal + '</strong> (Phần A, B và C)</p>' +
+    '<p>Bonus: <strong>' + bonusScore + ' / ' + bonusTotal + '</strong> câu trắc nghiệm thử thách.</p>' +
+    '<p>Còn ' + manualCount + ' câu/mục (D.I và D.II - bài luận) cần giáo viên chấm trực tiếp.</p>' +
+    '<p>Số lần rời khỏi trang trong khi làm bài: ' + tabSwitchCount + '</p>';
+  if (scoreBox.scrollIntoView) scoreBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
   document.getElementById('submitBtn').disabled = true;
-
-  // 1) Gửi kết quả NGAY, trước mọi thao tác giao diện
-  if (!skipSend) sendResultEmail(grade);
-
-  // 2) Cập nhật giao diện (lỗi ở đây không được làm hỏng việc gửi bài)
-  try {
-    stopTimer();
-    disableAudio();
-    lockAllInputs();
-    document.body.classList.remove('exam-active');
-    const manualCount = registry.filter(i => !i.auto).length;
-    const scoreBox = document.getElementById('scoreBox');
-    scoreBox.style.display = 'block';
-    scoreBox.innerHTML =
-      '<p><strong>Điểm tự động chấm: ' + grade.autoScore + ' / ' + grade.autoTotal + '</strong> (Phần A, B và C)</p>' +
-      '<p>Bonus: <strong>' + grade.bonusScore + ' / ' + grade.bonusTotal + '</strong> câu trắc nghiệm thử thách.</p>' +
-      '<p>Còn ' + manualCount + ' câu/mục (D.I và D.II - bài luận) cần giáo viên chấm trực tiếp.</p>' +
-      '<p>Số lần rời khỏi trang trong khi làm bài: ' + tabSwitchCount + '</p>';
-    if (scoreBox.scrollIntoView) scoreBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  } catch (e) { console.error(e); }
+  stopTimer();
   saveState();
 
   if (skipSend) {
     if (!emailSent) showEmailStatus('Bài đã nộp nhưng chưa gửi được cho giáo viên. Bấm "Gửi lại bài cho giáo viên".', '#a8402d', true);
     else showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
+  } else {
+    sendResultEmail();
   }
 }
 
@@ -975,24 +954,18 @@ document.getElementById('confirmSubmitAnyway').addEventListener('click', () => {
 });
 
 // ---------- Email (tự động gửi khi nộp bài) ----------
-function showEmailStatus(msg, color, showRetry, showFallback) {
-  document.getElementById('emailStatus').style.display = 'block';
-  const m = document.getElementById('emailStatusMsg');
-  m.style.color = color;
-  m.textContent = msg;
-  const retry = document.getElementById('retryBtn');
-  retry.style.display = showRetry ? 'inline-block' : 'none';
-  retry.disabled = false;
-  document.getElementById('emailFallback').style.display = (showRetry || showFallback) ? 'flex' : 'none';
+function showEmailStatus(msg, color, showRetry) {
+  const status = document.getElementById('emailStatus');
+  status.style.display = 'block';
+  status.style.color = color;
+  status.textContent = msg;
+  document.getElementById('retryBtn').style.display = showRetry ? 'inline-block' : 'none';
+  document.getElementById('retryBtn').disabled = false;
 }
 
-let emailSending = false;
-let lastPayload = null;
-function sendResultEmail(grade) {
-  if (emailSending) return;
+function sendResultEmail() {
   const name = document.getElementById('studentName').value.trim() || "Học sinh chưa ghi tên";
-  const g = (grade && typeof grade.autoScore === 'number') ? grade : gradeExam();
-  const { autoScore, autoTotal, bonusScore, bonusTotal } = g;
+  const { autoScore, autoTotal, bonusScore, bonusTotal } = gradeExam();
 
   let lines = [];
   lines.push("Học sinh: " + name);
@@ -1039,133 +1012,33 @@ function sendResultEmail(grade) {
     lines.push('');
   }
 
-  const payload = {
-    _subject: "Kết quả bài kiểm tra tháng 9 - " + name,
-    name: name,
-    score: autoScore + " / " + autoTotal + " (bonus " + bonusScore + " / " + bonusTotal + ")",
-    tab_switches: String(tabSwitchCount),
-    answers: lines.join("\n")
-  };
-  lastPayload = payload;
-  // Bản sao lưu cục bộ: kết quả không bao giờ bị mất dù gửi lỗi
-  try { localStorage.setItem(STORAGE_KEY + '_outbox', JSON.stringify(payload)); } catch (e) {}
-
-  emailSending = true;
+  document.getElementById('retryBtn').style.display = 'none';
   showEmailStatus('Đang gửi bài cho giáo viên...', '#4b5b54', false);
-  deliverPayload(payload)
-    .then(mode => {
-      emailSent = true;
-      saveState();
-      if (mode === 'ajax') showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
-      else showEmailStatus('Bài làm đã được nộp và gửi bằng kênh dự phòng. Nếu giáo viên chưa nhận được, bấm "Gửi qua Gmail" bên dưới.', '#8a5a1c', false, true);
-    })
-    .catch(err => {
-      const why = (err && err.kind === 'rejected')
-        ? 'Bài đã nộp nhưng dịch vụ email từ chối (địa chỉ nhận chưa được kích hoạt). '
-        : 'Bài đã nộp nhưng gửi email thất bại. ';
-      showEmailStatus(why + 'Bấm "Gửi lại" hoặc dùng "Gửi qua Gmail" / "Tải file kết quả".', '#a8402d', true);
-    })
-    .then(() => { emailSending = false; });
-}
 
-// Kênh 1: giống hệt index20 (nhanh). Kênh 2: form POST ẩn (không bị chặn CORS, chạy được trong Zalo/Facebook).
-function deliverPayload(payload) {
-  return postAjax(payload).then(
-    () => 'ajax',
-    err => {
-      if (err && err.kind === 'rejected') throw err;
-      return postViaForm(payload).then(() => 'form');
-    }
-  );
-}
-
-function postAjax(payload) {
-  const ctrl = ('AbortController' in window) ? new AbortController() : null;
-  const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 12000);
-  return fetch("https://formsubmit.co/ajax/" + TEACHER_EMAIL, {
+  fetch("https://formsubmit.co/ajax/" + TEACHER_EMAIL, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify(payload),
-    signal: ctrl ? ctrl.signal : undefined
+    body: JSON.stringify({
+      _subject: "Kết quả bài kiểm tra tháng 9 - " + name,
+      name: name,
+      score: autoScore + " / " + autoTotal + " (bonus " + bonusScore + " / " + bonusTotal + ")",
+      _captcha: "false",
+      tab_switches: String(tabSwitchCount),
+      answers: lines.join("\n")
+    })
   })
-  .then(res => res.text())
-  .then(t => {
-    clearTimeout(timer);
-    let data = null;
-    try { data = JSON.parse(t); } catch (e) {}
-    if (data && String(data.success) === 'false') { const e = new Error('rejected'); e.kind = 'rejected'; throw e; }
-    return data;
+  .then(res => res.json().then(data => ({ ok: res.ok, data: data })))
+  .then(r => {
+    if (!r.ok || String(r.data && r.data.success) === 'false') throw new Error('send failed');
+    emailSent = true;
+    saveState();
+    showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
   })
-  .catch(err => { clearTimeout(timer); if (!err.kind) err.kind = 'network'; throw err; });
-}
-
-function postViaForm(payload) {
-  return new Promise((resolve, reject) => {
-    try {
-      const frameName = 'fs_frame_' + Date.now();
-      const ifr = document.createElement('iframe');
-      ifr.name = frameName; ifr.style.display = 'none';
-      const f = document.createElement('form');
-      f.method = 'POST'; f.action = 'https://formsubmit.co/' + TEACHER_EMAIL;
-      f.target = frameName; f.acceptCharset = 'UTF-8'; f.style.display = 'none';
-      const fields = Object.assign({ _captcha: 'false', _template: 'box' }, payload);
-      Object.keys(fields).forEach(k => {
-        const ta = document.createElement('textarea');
-        ta.name = k; ta.value = fields[k]; f.appendChild(ta);
-      });
-      document.body.appendChild(ifr);
-      document.body.appendChild(f);
-      f.submit();
-      let done = false;
-      const finish = () => { if (done) return; done = true; setTimeout(() => { try { f.remove(); ifr.remove(); } catch (e) {} }, 1000); resolve(); };
-      ifr.addEventListener('load', finish);
-      setTimeout(finish, 9000);
-    } catch (e) { reject(e); }
+  .catch(() => {
+    showEmailStatus('Bài đã nộp nhưng gửi email thất bại. Kiểm tra mạng rồi bấm "Gửi lại bài cho giáo viên".', '#a8402d', true);
   });
 }
-
-document.getElementById('retryBtn').addEventListener('click', () => sendResultEmail());
-
-// Kênh 3 (dự phòng cuối): soạn thư Gmail + tải file kết quả
-function currentPayload() {
-  if (lastPayload) return lastPayload;
-  try { const raw = localStorage.getItem(STORAGE_KEY + '_outbox'); if (raw) return JSON.parse(raw); } catch (e) {}
-  return null;
-}
-function copyText(t) {
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); return; }
-  } catch (e) {}
-  const ta = document.createElement('textarea');
-  ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
-  document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); } catch (e) {}
-  ta.remove();
-}
-document.getElementById('gmailFallbackBtn').addEventListener('click', () => {
-  let p = currentPayload();
-  if (!p) { sendResultEmail(); p = currentPayload(); }
-  if (!p) return;
-  const full = p.name + ' - Điểm: ' + p.score + '\n\n' + p.answers;
-  copyText(full);
-  const body = 'Học sinh: ' + p.name + '\nĐiểm tự động: ' + p.score +
-    '\n\n(Toàn bộ bài làm đã được sao chép - hãy DÁN vào đây: Ctrl+V hoặc giữ ngón tay rồi chọn Dán)\n';
-  const url = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(TEACHER_EMAIL) +
-    '&su=' + encodeURIComponent(p._subject) + '&body=' + encodeURIComponent(body);
-  const w = window.open(url, '_blank');
-  if (!w) window.location.href = url;
-});
-document.getElementById('downloadFallbackBtn').addEventListener('click', () => {
-  let p = currentPayload();
-  if (!p) { sendResultEmail(); p = currentPayload(); }
-  if (!p) return;
-  const blob = new Blob(['\ufeff' + p.name + ' - Điểm: ' + p.score + '\r\n\r\n' + p.answers], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'Ket-qua-' + p.name.replace(/[^\w\-]+/g, '_') + '.txt';
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-});
+document.getElementById('retryBtn').addEventListener('click', sendResultEmail);
 
 // ---------- Teacher unlock / reveal answers ----------
 document.getElementById('unlockBtn').addEventListener('click', () => {
