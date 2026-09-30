@@ -334,7 +334,6 @@
     transition: transform 0.1s ease, box-shadow 0.15s ease;
   }
   .footer-bar button:active { transform: scale(0.97); }
-  .footer-bar button, .modal-actions button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .btn-submit { background: var(--pine); color: #f4efe4; }
   .btn-submit:hover { background: var(--pine-light); }
   .btn-submit:disabled { background: #b7c4bd; cursor: not-allowed; }
@@ -776,7 +775,7 @@ function buildAudioPlayer(block) {
   const playsEl = card.querySelector('.audio-plays');
 
   const audio = new Audio();
-  audio.preload = 'metadata';
+  audio.preload = 'auto';
   audio.src = block.src;
 
   const player = { id: block.id, audio: audio, state: 'idle', refresh: null };
@@ -849,11 +848,7 @@ function buildAudioPlayer(block) {
 }
 
 function disableAudio() {
-  audioPlayers.forEach(p => {
-    p.state = 'idle';
-    try { p.audio.pause(); p.audio.removeAttribute('src'); p.audio.load(); } catch (e) {}
-    p.refresh();
-  });
+  audioPlayers.forEach(p => { p.audio.pause(); p.state = 'idle'; p.refresh(); });
 }
 
 // ---------- Submit / grading ----------
@@ -903,16 +898,9 @@ function getUnansweredList() {
 
 function doSubmit(skipSend) {
   examLocked = true;
-  const grade = gradeExam();
-  const { autoScore, autoTotal, bonusScore, bonusTotal } = grade;
-  document.getElementById('submitBtn').disabled = true;
-
-  // Gửi email NGAY (trước mọi thao tác giao diện) để không bị trễ
-  if (!skipSend) sendResultEmail(grade);
-
-  stopTimer();
-  disableAudio();
+  const { autoScore, autoTotal, bonusScore, bonusTotal } = gradeExam();
   lockAllInputs();
+  disableAudio();
   document.body.classList.remove('exam-active');
 
   const manualCount = registry.filter(i => !i.auto).length;
@@ -924,11 +912,16 @@ function doSubmit(skipSend) {
     '<p>Còn ' + manualCount + ' câu/mục (D.I và D.II - bài luận) cần giáo viên chấm trực tiếp.</p>' +
     '<p>Số lần rời khỏi trang trong khi làm bài: ' + tabSwitchCount + '</p>';
   if (scoreBox.scrollIntoView) scoreBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  document.getElementById('submitBtn').disabled = true;
+  stopTimer();
   saveState();
 
   if (skipSend) {
     if (!emailSent) showEmailStatus('Bài đã nộp nhưng chưa gửi được cho giáo viên. Bấm "Gửi lại bài cho giáo viên".', '#a8402d', true);
     else showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
+  } else {
+    sendResultEmail();
   }
 }
 
@@ -970,12 +963,9 @@ function showEmailStatus(msg, color, showRetry) {
   document.getElementById('retryBtn').disabled = false;
 }
 
-let emailSending = false;
-function sendResultEmail(grade) {
-  if (emailSending) return;
+function sendResultEmail() {
   const name = document.getElementById('studentName').value.trim() || "Học sinh chưa ghi tên";
-  const g = (grade && typeof grade.autoScore === 'number') ? grade : gradeExam();
-  const { autoScore, autoTotal, bonusScore, bonusTotal } = g;
+  const { autoScore, autoTotal, bonusScore, bonusTotal } = gradeExam();
 
   let lines = [];
   lines.push("Học sinh: " + name);
@@ -1025,53 +1015,30 @@ function sendResultEmail(grade) {
   document.getElementById('retryBtn').style.display = 'none';
   showEmailStatus('Đang gửi bài cho giáo viên...', '#4b5b54', false);
 
-  const payload = JSON.stringify({
-    _subject: "Kết quả bài kiểm tra tháng 9 - " + name,
-    name: name,
-    score: autoScore + " / " + autoTotal + " (bonus " + bonusScore + " / " + bonusTotal + ")",
-    tab_switches: String(tabSwitchCount),
-    answers: lines.join("\n")
-  });
-
-  // Gửi giống bản index20 (nhanh), thêm timeout + tự gửi lại khi mạng chập chờn
-  const attempt = (n) => {
-    const ctrl = ('AbortController' in window) ? new AbortController() : null;
-    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 15000);
-    return fetch("https://formsubmit.co/ajax/" + TEACHER_EMAIL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: payload,
-      keepalive: true,
-      signal: ctrl ? ctrl.signal : undefined
+  fetch("https://formsubmit.co/ajax/" + TEACHER_EMAIL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify({
+      _subject: "Kết quả bài kiểm tra tháng 9 - " + name,
+      name: name,
+      score: autoScore + " / " + autoTotal + " (bonus " + bonusScore + " / " + bonusTotal + ")",
+      _captcha: "false",
+      tab_switches: String(tabSwitchCount),
+      answers: lines.join("\n")
     })
-    .then(res => res.text().then(t => {
-      clearTimeout(timer);
-      let data = null;
-      try { data = JSON.parse(t); } catch (e) {}
-      if (data && String(data.success) === 'false') { const err = new Error('rejected'); err.noRetry = true; throw err; }
-      if (!res.ok) throw new Error('http ' + res.status);
-      return data;
-    }))
-    .catch(err => {
-      clearTimeout(timer);
-      if (!err.noRetry && n < 2) return attempt(n + 1);
-      throw err;
-    });
-  };
-
-  emailSending = true;
-  attempt(0)
-  .then(() => {
+  })
+  .then(res => res.json().then(data => ({ ok: res.ok, data: data })))
+  .then(r => {
+    if (!r.ok || String(r.data && r.data.success) === 'false') throw new Error('send failed');
     emailSent = true;
     saveState();
     showEmailStatus('Bài làm đã được nộp và gửi đến giáo viên.', '#1c6e4a', false);
   })
   .catch(() => {
     showEmailStatus('Bài đã nộp nhưng gửi email thất bại. Kiểm tra mạng rồi bấm "Gửi lại bài cho giáo viên".', '#a8402d', true);
-  })
-  .then(() => { emailSending = false; });
+  });
 }
-document.getElementById('retryBtn').addEventListener('click', () => sendResultEmail());
+document.getElementById('retryBtn').addEventListener('click', sendResultEmail);
 
 // ---------- Teacher unlock / reveal answers ----------
 document.getElementById('unlockBtn').addEventListener('click', () => {
@@ -1139,7 +1106,7 @@ function updateTimerDisplay() {
 function tickTimer() {
   secondsLeft--;
   updateTimerDisplay();
-  if (secondsLeft % 5 === 0 || secondsLeft <= 0) saveState();
+  saveState();
   if (secondsLeft <= 0) {
     stopTimer();
     if (!examLocked) {
